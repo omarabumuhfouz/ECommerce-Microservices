@@ -1,0 +1,1 @@
+global using CancellationService.Application.Services;

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Contracts.User";
+
+package user;
+
+service UserProtoService {
+    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdResponse);
+
+}
+
+message GetUserByIdRequest
+{
+    string user_id = 1;
+}
+
+message GetUserByIdResponse
+{
+    string user_id = 1;
+    string email = 2;
+    google.protobuf.Timestamp createdAt = 3;
+    repeated string roles =4;
+}

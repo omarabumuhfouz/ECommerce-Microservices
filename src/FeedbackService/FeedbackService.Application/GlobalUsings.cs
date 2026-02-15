@@ -1,0 +1,11 @@
+global using MediatR;
+global using SharedKernel.Abstractions.Messaging;
+global using FeedbackService.Domain.Feedbacks;
+global using Microsoft.Extensions.Logging;
+global using SharedKernel.Abstractions;
+global using SharedKernel.Shared;
+global using FeedbackService.Application.Feedbacks.Specifications;
+global using FeedbackService.Application.Feedbacks.DTOs;
+global using FluentValidation;
+global using AutoMapper;
+global using FeedbackService.Domain.Errors;

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Admin Panel</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #5a5c69;
+        }
+        
+        .navbar {
+            background: #fff;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 1rem 1.5rem;
+        }
+        
+        .card {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card .card-header {
+            background: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .stat-card {
+            border-left: 4px solid;
+            border-radius: 0.5rem;
+        }
+        
+        .stat-card.primary { border-left-color: var(--primary); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.info { border-left-color: var(--info); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .product-filter {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .product-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .status-badge {
+            padding: 0.35rem 0.5rem;
+            border-radius: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            margin: 0 2px;
+        }
+        
+        .stock-low {
+            color: #e74a3b;
+            font-weight: 600;
+        }
+        
+        .stock-medium {
+            color: #f6c23e;
+            font-weight: 600;
+        }
+        
+        .stock-high {
+            color: #1cc88a;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-box"></i> Product Management
+            </a>
+            
+            <div class="ms-auto d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-danger">5</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                        <li><a class="dropdown-item" href="#">Low stock alert: iPhone 13</a></li>
+                        <li><a class="dropdown-item" href="#">New product review</a></li>
+                        <li><a class="dropdown-item" href="#">Product update available</a></li>
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i> Admin User
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Products Dashboard</h1>
+            <button class="btn btn-primary">
+                <i class="fas fa-plus fa-sm text-white-50"></i> Add New Product
+            </button>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card primary h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Products</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">248</div>
+                                <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 12 since last month</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-boxes fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card success h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Out of Stock</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">7</div>
+                                <div class="mt-2 text-danger small"><i class="fas fa-exclamation-circle me-1"></i> Needs attention</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card info h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Low Inventory</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                <div class="mt-2 text-warning small"><i class="fas fa-arrow-down me-1"></i> 3 since yesterday</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card warning h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Top Selling Category</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Electronics</div>
+                                <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 42% of total sales</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-mobile-alt fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="product-filter">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="categoryFilter">Category</label>
+                        <select class="form-control" id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="home">Home & Kitchen</option>
+                            <option value="books">Books</option>
+                            <option value="sports">Sports & Outdoors</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="statusFilter">Status</label>
+                        <select class="form-control" id="statusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="stockFilter">Stock Status</label>
+                        <select class="form-control" id="stockFilter">
+                            <option value="all">All Stock Levels</option>
+                            <option value="out">Out of Stock</option>
+                            <option value="low">Low Stock</option>
+                            <option value="sufficient">Sufficient Stock</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="priceFilter">Price Range</label>
+                        <select class="form-control" id="priceFilter">
+                            <option value="all">All Prices</option>
+                            <option value="0-50">$0 - $50</option>
+                            <option value="50-100">$50 - $100</option>
+                            <option value="100-500">$100 - $500</option>
+                            <option value="500+">$500+</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="searchProducts">Search Products</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search by product name, SKU, description...">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary me-2">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                    <button class="btn btn-outline-secondary">
+                        <i class="fas fa-sync"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <!-- Products by Category Chart -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="card mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Products by Category</h6>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                <li><a class="dropdown-item" href="#">Export Data</a></li>
+                                <li><a class="dropdown-item" href="#">Print Chart</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stock Status Chart -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Stock Status</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="stockChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-center small">
+                            <span class="me-2"><i class="fas fa-circle text-success"></i> Sufficient</span>
+                            <span class="me-2"><i class="fas fa-circle text-warning"></i> Low</span>
+                            <span class="me-2"><i class="fas fa-circle text-danger"></i> Out of Stock</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Product List</h6>
+                        <div class="export-options">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-file-export me-1"></i> Export</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Product Name</th>
+                                        <th>SKU</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><img src="https://via.placeholder.com/60x60?text=iPhone" class="product-img" alt="iPhone 13"></td>
+                                        <td>iPhone 13 Pro</td>
+                                        <td>IP13-PRO-256</td>
+                                        <td>Electronics</td>
+                                        <td>$999.00</td>
+                                        <td class="stock-low">5 left</td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><img src="https://via.placeholder.com/60x60?text=Samsung" class="product-img" alt="Samsung Galaxy"></td>
+                                        <td>Samsung Galaxy S21</td>
+                                        <td>SG-S21-128</td>
+                                        <td>Electronics</td>
+                                        <td>$799.99</td>
+                                        <td class="stock-medium">15 left</td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><img src="https://via.placeholder.com/60x60?text=Nike" class="product-img" alt="Nike Shoes"></td>
+                                        <td>Nike Air Max 270</td>
+                                        <td>NK-AM270-BL</td>
+                                        <td>Clothing</td>
+                                        <td>$150.00</td>
+                                        <td class="stock-high">42 left</td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><img src="https://via.placeholder.com/60x60?text=Kitchen" class="product-img" alt="Blender"></td>
+                                        <td>Professional Blender</td>
+                                        <td>BLEND-PRO-1000</td>
+                                        <td>Home & Kitchen</td>
+                                        <td>$89.99</td>
+                                        <td class="stock-high">78 left</td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><img src="https://via.placeholder.com/60x60?text=Book" class="product-img" alt="Book"></td>
+                                        <td>The Psychology of Money</td>
+                                        <td>BOOK-PSY-MONEY</td>
+                                        <td>Books</td>
+                                        <td>$24.99</td>
+                                        <td class="stock-low">2 left</td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><img src="https://via.placeholder.com/60x60?text=Watch" class="product-img" alt="Smart Watch"></td>
+                                        <td>Smart Watch Series 5</td>
+                                        <td>SWATCH-S5-BLK</td>
+                                        <td>Electronics</td>
+                                        <td>$249.99</td>
+                                        <td class="stock-danger">0 left</td>
+                                        <td><span class="badge bg-danger status-badge">Out of Stock</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><img src="https://via.placeholder.com/60x60?text=Backpack" class="product-img" alt="Backpack"></td>
+                                        <td>Hiking Backpack 40L</td>
+                                        <td>BAG-HIKING-40L</td>
+                                        <td>Sports & Outdoors</td>
+                                        <td>$79.99</td>
+                                        <td class="stock-medium">12 left</td>
+                                        <td><span class="badge bg-warning status-badge">Draft</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Category Chart
+            var ctx = document.getElementById("categoryChart").getContext('2d');
+            var categoryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Electronics", "Clothing", "Home & Kitchen", "Books", "Sports & Outdoors"],
+                    datasets: [{
+                        label: 'Number of Products',
+                        data: [85, 62, 47, 34, 20],
+                        backgroundColor: [
+                            'rgba(78, 115, 223, 0.7)',
+                            'rgba(28, 200, 138, 0.7)',
+                            'rgba(54, 185, 204, 0.7)',
+                            'rgba(246, 194, 62, 0.7)',
+                            'rgba(231, 74, 59, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(78, 115, 223, 1)',
+                            'rgba(28, 200, 138, 1)',
+                            'rgba(54, 185, 204, 1)',
+                            'rgba(246, 194, 62, 1)',
+                            'rgba(231, 74, 59, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Stock Chart
+            var ctx2 = document.getElementById("stockChart").getContext('2d');
+            var stockChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ["Sufficient Stock", "Low Stock", "Out of Stock"],
+                    datasets: [{
+                        data: [185, 42, 21],
+                        backgroundColor: ['#1cc88a', '#f6c23e', '#e74a3b'],
+                        hoverBackgroundColor: ['#17a673', '#dda20a', '#be2617'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

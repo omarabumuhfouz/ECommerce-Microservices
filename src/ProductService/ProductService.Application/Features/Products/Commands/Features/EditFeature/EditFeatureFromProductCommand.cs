@@ -1,0 +1,2 @@
+namespace ProductService.Application.Features.Products.Commands.Features.EditFeature;
+public record EditFeatureFromProductCommand(Guid ProductId,string OldName, string NewName, string NewValue) : ICommand<Unit>;

@@ -1,0 +1,2 @@
+namespace ProductService.Application.Features.Products.Commands.ImagesManagement.ReplaceRelatedImage;
+public record ReplaceRelatedImageCommand(Guid ProductId, string OldUrl, string NewUrl, string? NewAltText) : ICommand<Unit>;

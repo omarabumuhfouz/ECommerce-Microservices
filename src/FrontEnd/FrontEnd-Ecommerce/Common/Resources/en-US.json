@@ -1,0 +1,7 @@
+{
+  "WelcomeMessage": "Welcome, {0}!",
+  "RegisterSuccess": "You have registered successfully.",
+  "LogoutSuccess": "You have logged out successfully.",
+   "LogoutFailed": "Logout Failed"
+
+}

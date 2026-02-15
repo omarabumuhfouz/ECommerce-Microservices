@@ -1,0 +1,17 @@
+﻿global using AutoMapper;
+global using FluentValidation;
+global using MediatR;
+global using Microsoft.Extensions.Localization;
+global using Microsoft.Extensions.Logging;
+global using ProductService.Application.DTOs;
+global using SharedKernel.Abstractions.Messaging;
+global using SharedKernel.Abstractions;
+global using ProductService.Application.Common.ApplicationErrors;
+global using ProductService.Domain.CategoryManagement;
+global using SharedKernel.Shared;
+global using ProductService.Application.Extensions;
+global using ProductService.Domain.ProductManagement;
+global using ProductService.Domain.Errors;
+global using ProductService.Application.Features.Categories.Specifications;
+global using SharedKernel.Specifications;
+global using ProductService.Application.Features.Products.Specifications;

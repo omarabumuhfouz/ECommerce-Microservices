@@ -1,0 +1,13 @@
+global using AuthService.Domain.Errors;
+global using AuthService.Domain.Extensions;
+global using FluentValidation;
+global using MediatR;
+global using SharedKernel.Abstractions.Messaging;
+global using AuthService.Domain.Users;
+global using SharedKernel.Specifications;
+global using Microsoft.Extensions.Logging;
+global using SharedKernel.Abstractions;
+global using SharedKernel.Shared;
+global using AuthService.Application.Features.Users.DTOs;
+global using AuthService.Domain.Clients;
+global using AuthService.Domain.RefreshTokens;

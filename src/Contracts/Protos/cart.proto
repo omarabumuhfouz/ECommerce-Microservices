@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "Contracts.Cart";
+
+package cart;
+
+service CartProtoService{
+    rpc MarkCartAsCheckedOut(MarkCartAsCheckedRequest) returns (ModelResponse);
+}
+
+message MarkCartAsCheckedRequest{
+    string customerId = 1;
+}
+
+message ModelResponse
+{
+    bool success=1;
+}

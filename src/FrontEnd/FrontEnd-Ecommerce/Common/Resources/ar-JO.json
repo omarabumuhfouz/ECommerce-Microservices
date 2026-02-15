@@ -1,0 +1,8 @@
+{
+  "WelcomeMessage": "مرحباً، {0}!",
+  "RegisterSuccess": "تم التسجيل بنجاح.",
+  "LogoutSuccess": "تم تسجيل الخروج بنجاح.",
+  "LogoutFailed": "فشل تسجيل الخروج"
+
+
+}

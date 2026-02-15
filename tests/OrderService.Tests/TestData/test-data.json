@@ -1,0 +1,135 @@
+[
+  {
+    "Id": "ed4920a3-58a3-4be4-bd2b-7a80211edf67",
+    "PaymentId": "08c9d60e-223e-4994-9fd6-9382f564e8d0",
+    "CustomerId": "2c4bc538-ed40-417b-b510-0921b23feb68",
+    "OrderNumber": "ORD-0001",
+    "OrderDate": "2025-08-01T10:00:00",
+    "BillingAddressId": "3ddb7bae-46d4-4013-bf35-e82c3c57662c",
+    "ShippingAddressId": "dae46604-bcac-4460-8643-a59aa9553735",
+    "ShippingCost": 10.0,
+    "OrderStatus": "Pending",
+    "OrderItems": [
+      {
+        "Id": "5520f4d9-c46f-451e-b46b-a2104648e58d",
+        "OrderId": "ed4920a3-58a3-4be4-bd2b-7a80211edf67",
+        "ProductId": "56425d9d-f79d-4802-8aed-8f2b5e72126b",
+        "Quantity": 2,
+        "UnitPrice": 100.0,
+        "DiscountPercentage": 10.0
+      },
+      {
+        "Id": "2e13c9a1-514f-40d2-8476-05cc4775101f",
+        "OrderId": "ed4920a3-58a3-4be4-bd2b-7a80211edf67",
+        "ProductId": "63fe786a-9743-4868-a1da-b33275e22ffd",
+        "Quantity": 1,
+        "UnitPrice": 50.0,
+        "DiscountPercentage": 0.0
+      }
+    ]
+  },
+  {
+    "Id": "fb3bfa2d-fb16-4309-862d-62882433b877",
+    "PaymentId": "f479009c-bfae-4056-a6b6-c97b4324072c",
+    "CustomerId": "6c582932-f4f7-4ab8-adc3-ae9a610caf57",
+    "OrderNumber": "ORD-0002",
+    "OrderDate": "2025-08-02T11:00:00",
+    "BillingAddressId": "e5d47c21-5320-434d-ba75-ca244ed57a52",
+    "ShippingAddressId": "9317c681-9266-42ad-b105-5e8a30361cad",
+    "ShippingCost": 15.0,
+    "OrderStatus": "Processing",
+    "OrderItems": [
+      {
+        "Id": "0028ab2c-2239-48bd-b224-96adc88e7a56",
+        "OrderId": "fb3bfa2d-fb16-4309-862d-62882433b877",
+        "ProductId": "8052ca99-8d8d-48a7-a2c8-9eed4696b89a",
+        "Quantity": 100,
+        "UnitPrice": 20.0,
+        "DiscountPercentage": 5.0
+      }
+    ]
+  },
+  {
+    "Id": "66c3a066-fb91-4dc0-b8bc-e3e149f01dbf",
+    "PaymentId": "17e0cd0a-579b-4f0a-8688-f1988987a874",
+    "CustomerId": "23914a96-ea51-421f-bc49-f102673624b7",
+    "OrderNumber": "ORD-0003",
+    "OrderDate": "2025-08-03T12:00:00",
+    "BillingAddressId": "eab712e1-e85b-448f-b938-2fb956a54f1f",
+    "ShippingAddressId": "2a4e5eff-83f3-4303-9396-bd69c5365c9a",
+    "ShippingCost": 0.0,
+    "OrderStatus": "Shipped",
+    "OrderItems": [
+      {
+        "Id": "553be317-6944-4730-bf14-65adc2334541",
+        "OrderId": "66c3a066-fb91-4dc0-b8bc-e3e149f01dbf",
+        "ProductId": "2352842e-1a1c-4495-aacd-1f9675f88f1e",
+        "Quantity": 5,
+        "UnitPrice": 300.0,
+        "DiscountPercentage": 100.0
+      }
+    ]
+  },
+  {
+    "Id": "1a27b82c-00ab-4ea7-8cbe-d06a227c7375",
+    "PaymentId": "378f22e6-40a6-4104-9879-d8d5898694cc",
+    "CustomerId": "a7f70f94-e81f-4634-92ec-2086564a374f",
+    "OrderNumber": "ORD-0004",
+    "OrderDate": "2025-08-04T13:00:00",
+    "BillingAddressId": "520722be-c79d-4c9b-9fc9-11426555be00",
+    "ShippingAddressId": "073f7369-47cf-4b41-b576-8dc9c10fca10",
+    "ShippingCost": 5.0,
+    "OrderStatus": "Delivered",
+    "OrderItems": [
+      {
+        "Id": "efe56f29-e838-4824-8a5f-c1bb24d3b4f5",
+        "OrderId": "1a27b82c-00ab-4ea7-8cbe-d06a227c7375",
+        "ProductId": "44e0ae13-f437-46ca-a7cb-ab54016cf7a3",
+        "Quantity": 1,
+        "UnitPrice": 10.0,
+        "DiscountPercentage": 0.0
+      }
+    ]
+  },
+  {
+    "Id": "7240cc61-9b87-4766-a494-6fce8e072e78",
+    "PaymentId": "566ffe44-18ec-44be-b644-19363cf7c39e",
+    "CustomerId": "dc3f8e4c-015e-43f5-8ee3-cef53366b10e",
+    "OrderNumber": "ORD-0005",
+    "OrderDate": "2025-08-05T14:00:00",
+    "BillingAddressId": "11ba6511-a33c-4e75-9db4-fd7cf314d7b2",
+    "ShippingAddressId": "cb077898-ccb3-4ef4-9404-64ab40e42e8f",
+    "ShippingCost": 20.0,
+    "OrderStatus": "Canceled",
+    "OrderItems": [
+      {
+        "Id": "c081ab63-4e7a-47c7-89ac-3d4a1d56da53",
+        "OrderId": "7240cc61-9b87-4766-a494-6fce8e072e78",
+        "ProductId": "d8afbc83-2d7c-4b79-a797-02288b64a2bf",
+        "Quantity": 3,
+        "UnitPrice": 200.0,
+        "DiscountPercentage": 20.0
+      },
+      {
+        "Id": "e229b62f-e5a2-46ff-8055-b42e20e00018",
+        "OrderId": "7240cc61-9b87-4766-a494-6fce8e072e78",
+        "ProductId": "d8afbc83-2d7c-4b79-a797-02288b64a2bf",
+        "Quantity": 2,
+        "UnitPrice": 200.0,
+        "DiscountPercentage": 15.0
+      }
+    ]
+  },
+  {
+    "Id": "7353529b-26e5-4088-a12b-0ca8c685ffd2",
+    "PaymentId": "6e604361-ee34-4069-b12a-7b636f4c8195",
+    "CustomerId": "54b7edb5-5a95-4e88-88ed-3ff057f4ee6b",
+    "OrderNumber": "ORD-0006",
+    "OrderDate": "2025-08-06T15:00:00",
+    "BillingAddressId": "bcc6d251-870c-4eae-a849-5e6c97f32ac0",
+    "ShippingAddressId": "aa9b1a96-f88a-41e2-92cc-0757326cfa3e",
+    "ShippingCost": 25.0,
+    "OrderStatus": "Pending",
+    "OrderItems": []
+  }
+]

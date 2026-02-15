@@ -1,0 +1,9 @@
+﻿global using AutoMapper;
+global using FluentValidation;
+global using MediatR;
+global using PaymentService.Application.DTOs;
+global using PaymentService.Application.Services;
+global using SharedKernel.Abstractions.Messaging;
+global using PaymentService.Domain.Payments;
+global using SharedKernel.Abstractions;
+global using SharedKernel.Shared;

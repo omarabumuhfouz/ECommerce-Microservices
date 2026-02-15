@@ -1,0 +1,12 @@
+SELECT TOP (1000)
+    [Id]
+      , [FirstName]
+      , [LastName]
+      , [PhoneNumber]
+      , [PasswordHash]
+      , [PasswordChangedAt]
+      , [IsVerified]
+      , [DateOfBirth]
+      , [Email]
+      , [IsActive]
+FROM [ECommerce.CustomerService].[dbo].[Customers]

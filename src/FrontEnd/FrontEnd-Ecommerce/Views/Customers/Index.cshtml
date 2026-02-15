@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management - Admin Panel</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #5a5c69;
+        }
+        
+        .navbar {
+            background: #fff;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 1rem 1.5rem;
+        }
+        
+        .card {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card .card-header {
+            background: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .stat-card {
+            border-left: 4px solid;
+            border-radius: 0.5rem;
+        }
+        
+        .stat-card.primary { border-left-color: var(--primary); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.info { border-left-color: var(--info); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.danger { border-left-color: var(--danger); }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .customer-filter {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .status-badge {
+            padding: 0.35rem 0.5rem;
+            border-radius: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            margin: 0 2px;
+        }
+        
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #4e73df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .tier-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .tier-bronze {
+            background-color: #cd7f32;
+            color: white;
+        }
+        
+        .tier-silver {
+            background-color: #c0c0c0;
+            color: black;
+        }
+        
+        .tier-gold {
+            background-color: #ffd700;
+            color: black;
+        }
+        
+        .tier-platinum {
+            background-color: #e5e4e2;
+            color: black;
+        }
+        
+        .customer-details {
+            background-color: #f8f9fc;
+            border-radius: 0.35rem;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .details-show {
+            display: block;
+        }
+        
+        .email-modal .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .customer-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.35rem;
+            font-size: 0.75rem;
+            background-color: #eef2f7;
+            color: #5a5c69;
+            margin: 0.1rem;
+        }
+        
+        .select-all-header {
+            width: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-users"></i> Customer Management
+            </a>
+            
+            <div class="ms-auto d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-danger">3</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                        <li><a class="dropdown-item" href="#">New customer registration</a></li>
+                        <li><a class="dropdown-item" href="#">Customer support ticket</a></li>
+                        <li><a class="dropdown-item" href="#">Loyalty tier upgrade</a></li>
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i> Admin User
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Customer Management</h1>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal">
+                <i class="fas fa-envelope fa-sm text-white-50"></i> Email Customers
+            </button>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card primary h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Customers</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">2,487</div>
+                                <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 5.2% since last month</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card success h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">New This Month</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">124</div>
+                                <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 12 since last week</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-plus fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card info h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Avg. Order Value</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">$87.53</div>
+                                <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 3.2% since last month</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card warning h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Loyal Customers</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">487</div>
+                                <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 8.5% since last month</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-star fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="customer-filter">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="statusFilter">Status</label>
+                        <select class="form-control" id="statusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="new">New Customers</option>
+                            <option value="returning">Returning Customers</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="tierFilter">Loyalty Tier</label>
+                        <select class="form-control" id="tierFilter">
+                            <option value="all">All Tiers</option>
+                            <option value="bronze">Bronze</option>
+                            <option value="silver">Silver</option>
+                            <option value="gold">Gold</option>
+                            <option value="platinum">Platinum</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="dateFilter">Registration Date</label>
+                        <select class="form-control" id="dateFilter">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="spendFilter">Spend Level</label>
+                        <select class="form-control" id="spendFilter">
+                            <option value="all">All Spend Levels</option>
+                            <option value="low">Low ($0-50)</option>
+                            <option value="medium">Medium ($50-200)</option>
+                            <option value="high">High ($200-500)</option>
+                            <option value="vip">VIP ($500+)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="searchCustomers">Search Customers</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search by name, email, phone, location...">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary me-2">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                    <button class="btn btn-outline-secondary">
+                        <i class="fas fa-sync"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <!-- Customer Acquisition Chart -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="card mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Customer Acquisition</h6>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                <li><a class="dropdown-item" href="#">Export Data</a></li>
+                                <li><a class="dropdown-item" href="#">Print Chart</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="acquisitionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loyalty Tier Distribution Chart -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Loyalty Tier Distribution</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="tierChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-center small">
+                            <span class="me-2"><i class="fas fa-circle text-primary"></i> Platinum</span>
+                            <span class="me-2"><i class="fas fa-circle text-warning"></i> Gold</span>
+                            <span class="me-2"><i class="fas fa-circle text-secondary"></i> Silver</span>
+                            <span class="me-2"><i class="fas fa-circle text-brown"></i> Bronze</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Customer List</h6>
+                        <div class="export-options">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-file-export me-1"></i> Export</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="select-all-header">
+                                            <input type="checkbox" id="selectAll">
+                                        </th>
+                                        <th>Customer</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Location</th>
+                                        <th>Orders</th>
+                                        <th>Total Spend</th>
+                                        <th>Loyalty Tier</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="checkbox" class="customer-checkbox" value="1234"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="customer-avatar">SW</div>
+                                                <div class="ms-3">
+                                                    <div class="fw-bold">Sarah Wilson</div>
+                                                    <div class="text-muted small">Joined: 2023-06-15</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>sarah.w@example.com</td>
+                                        <td>(555) 123-4567</td>
+                                        <td>New York, USA</td>
+                                        <td>12</td>
+                                        <td>$1,245.75</td>
+                                        <td><span class="tier-badge tier-gold">Gold</span></td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action view-details" data-id="1234"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-ban"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="customer-checkbox" value="1235"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="customer-avatar">RD</div>
+                                                <div class="ms-3">
+                                                    <div class="fw-bold">Robert Davis</div>
+                                                    <div class="text-muted small">Joined: 2023-08-22</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>robert.d@example.com</td>
+                                        <td>(555) 987-6543</td>
+                                        <td>London, UK</td>
+                                        <td>8</td>
+                                        <td>$876.50</td>
+                                        <td><span class="tier-badge tier-silver">Silver</span></td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action view-details" data-id="1235"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-ban"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="customer-checkbox" value="1236"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="customer-avatar">JL</div>
+                                                <div class="ms-3">
+                                                    <div class="fw-bold">Jennifer Lee</div>
+                                                    <div class="text-muted small">Joined: 2023-10-05</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>jennifer.l@example.com</td>
+                                        <td>(555) 456-7890</td>
+                                        <td>Toronto, Canada</td>
+                                        <td>3</td>
+                                        <td>$245.99</td>
+                                        <td><span class="tier-badge tier-bronze">Bronze</span></td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action view-details" data-id="1236"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-ban"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="customer-checkbox" value="1237"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="customer-avatar">MB</div>
+                                                <div class="ms-3">
+                                                    <div class="fw-bold">Michael Brown</div>
+                                                    <div class="text-muted small">Joined: 2023-09-12</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>michael.b@example.com</td>
+                                        <td>(555) 234-5678</td>
+                                        <td>Sydney, Australia</td>
+                                        <td>15</td>
+                                        <td>$2,124.50</td>
+                                        <td><span class="tier-badge tier-platinum">Platinum</span></td>
+                                        <td><span class="badge bg-success status-badge">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action view-details" data-id="1237"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-ban"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="customer-checkbox" value="1238"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="customer-avatar">EJ</div>
+                                                <div class="ms-3">
+                                                    <div class="fw-bold">Emily Johnson</div>
+                                                    <div class="text-muted small">Joined: 2023-11-01</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>emily.j@example.com</td>
+                                        <td>(555) 765-4321</td>
+                                        <td>Berlin, Germany</td>
+                                        <td>1</td>
+                                        <td>$87.99</td>
+                                        <td><span class="tier-badge tier-bronze">Bronze</span></td>
+                                        <td><span class="badge bg-warning status-badge">New</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action view-details" data-id="1238"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-ban"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Details Sections -->
+                        <div id="details-1234" class="customer-details">
+                            <h6>Customer Details: Sarah Wilson</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Email:</strong> sarah.w@example.com</p>
+                                    <p><strong>Phone:</strong> (555) 123-4567</p>
+                                    <p><strong>Location:</strong> New York, USA</p>
+                                    <p><strong>Registration Date:</strong> 2023-06-15</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Total Orders:</strong> 12</p>
+                                    <p><strong>Total Spend:</strong> $1,245.75</p>
+                                    <p><strong>Last Order:</strong> 2023-10-15 ($128.50)</p>
+                                    <p><strong>Loyalty Tier:</strong> <span class="tier-badge tier-gold">Gold</span></p>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <p><strong>Tags:</strong> 
+                                        <span class="customer-tag">Frequent Buyer</span>
+                                        <span class="customer-tag">Electronics</span>
+                                        <span class="customer-tag">Premium Customer</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-primary me-2"><i class="fas fa-eye me-1"></i> View Full Profile</button>
+                                <button class="btn btn-sm btn-info me-2"><i class="fas fa-envelope me-1"></i> Send Message</button>
+                                <button class="btn btn-sm btn-warning me-2"><i class="fas fa-star me-1"></i> Adjust Tier</button>
+                                <button class="btn btn-sm btn-secondary close-details" data-id="1234">Close</button>
+                            </div>
+                        </div>
+
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="emailModalLabel">Email Customers</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="email-modal">
+                        <div class="form-group">
+                            <label for="emailRecipients">Recipients</label>
+                            <select class="form-control" id="emailRecipients">
+                                <option value="all">All Customers (2,487)</option>
+                                <option value="filtered">Currently Filtered Customers (5)</option>
+                                <option value="selected">Selected Customers (0)</option>
+                                <option value="tier">By Loyalty Tier</option>
+                                <option value="segment">By Customer Segment</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="emailSubject">Subject</label>
+                            <input type="text" class="form-control" id="emailSubject" placeholder="Enter email subject">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="emailMessage">Message</label>
+                            <textarea class="form-control" id="emailMessage" rows="6" placeholder="Compose your message"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="emailTemplate">Template</label>
+                            <select class="form-control" id="emailTemplate">
+                                <option value="">Select a template (optional)</option>
+                                <option value="welcome">Welcome Email</option>
+                                <option value="promotion">Promotion Announcement</option>
+                                <option value="newsletter">Monthly Newsletter</option>
+                                <option value="update">Product Update</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" typecheckbox" id="includePersonalization">
+                            <label class="form-check-label" for="includePersonalization">
+                                Include personalization (customer name)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> Send Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Customer Acquisition Chart
+            var ctx = document.getElementById("acquisitionChart").getContext('2d');
+            var acquisitionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: 'New Customers',
+                        data: [120, 145, 132, 158, 190, 205, 230, 215, 240, 210, 195, 220],
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        pointRadius: 3,
+                        pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                        pointBorderColor: 'rgba(78, 115, 223, 1)',
+                        pointHoverRadius: 3,
+                        pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+                        pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        fill: true,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 50
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Tier Chart
+            var ctx2 = document.getElementById("tierChart").getContext('2d');
+            var tierChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ["Platinum", "Gold", "Silver", "Bronze"],
+                    datasets: [{
+                        data: [287, 654, 892, 654],
+                        backgroundColor: ['#e5e4e2', '#ffd700', '#c0c0c0', '#cd7f32'],
+                        hoverBackgroundColor: ['#d1d0ce', '#e6c300', '#adadad', '#b16d24'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // View details functionality
+            $('.view-details').click(function() {
+                var id = $(this).data('id');
+                $('.customer-details').removeClass('details-show');
+                $('#details-' + id).addClass('details-show');
+            });
+            
+            // Close details functionality
+            $('.close-details').click(function() {
+                var id = $(this).data('id');
+                $('#details-' + id).removeClass('details-show');
+            });
+            
+            // Select all functionality
+            $('#selectAll').click(function() {
+                $('.customer-checkbox').prop('checked', this.checked);
+                updateSelectedCount();
+            });
+            
+            $('.customer-checkbox').change(function() {
+                if ($('.customer-checkbox:checked').length === $('.customer-checkbox').length) {
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    $('#selectAll').prop('checked', false);
+                }
+                updateSelectedCount();
+            });
+            
+            function updateSelectedCount() {
+                const count = $('.customer-checkbox:checked').length;
+                $('#emailRecipients option[value="selected"]').text(`Selected Customers (${count})`);
+            }
+        });
+    </script>
+</body>
+</html>

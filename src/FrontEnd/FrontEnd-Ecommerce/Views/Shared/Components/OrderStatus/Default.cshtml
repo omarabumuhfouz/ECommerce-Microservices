@@ -1,0 +1,48 @@
+@model FrontEnd_Ecommerce.Models.OrderStatusChartViewModel
+
+<div class="col-xl-4 col-lg-5">
+    <div class="card mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Order Status</h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-pie pt-4 pb-2">
+
+                <canvas id="orderStatusChart" height="250"></canvas>
+
+            </div>
+            <div class="mt-4 text-center small">
+                <span class="me-2"><i class="fas fa-circle text-primary"></i> Completed</span>
+                <span class="me-2"><i class="fas fa-circle text-success"></i> Processing</span>
+                <span class="me-2"><i class="fas fa-circle text-info"></i> Pending</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        const ctx2 = document.getElementById("orderStatusChart").getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ["Completed", "Processing", "Pending"],
+                datasets: [{
+                    @* data: [@Model.Completed, @Model.Processing, @Model.Pending], *@
+                    data: [30, 20, 50],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>

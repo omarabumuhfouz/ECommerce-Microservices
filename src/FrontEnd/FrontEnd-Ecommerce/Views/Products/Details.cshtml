@@ -1,0 +1,171 @@
+<!-- Product Detail Screen -->
+<div>
+            <button class="btn btn-outline-secondary mb-4" onclick="showScreen('products-screen')">
+                <i class="fas fa-arrow-left me-2"></i> Back to Products
+            </button>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3 text-center">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="product-detail-image" alt="Wireless Headphones" id="main-image">
+                    </div>
+                    <div class="d-flex justify-content-center gap-2">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="thumbnail active" onclick="changeImage(this)">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="thumbnail" onclick="changeImage(this)">
+                        <img src="https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="thumbnail" onclick="changeImage(this)">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h1 class="product-title">Premium Wireless Headphones</h1>
+                    <div class="rating mb-3">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="ms-2">(128 reviews)</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="product-price">$79.99</span>
+                        <span class="original-price ms-2">$99.99</span>
+                        <span class="badge bg-danger ms-2">20% OFF</span>
+                    </div>
+                    
+                    <p class="mb-4">Experience crystal-clear sound with our premium wireless headphones. Featuring active noise cancellation, 30-hour battery life, and comfortable over-ear design for all-day listening.</p>
+                    
+                    <div class="mb-4">
+                        <h5>Key Features</h5>
+                        <ul>
+                            <li>Active Noise Cancellation technology</li>
+                            <li>30-hour battery life</li>
+                            <li>Bluetooth 5.0 with 30ft range</li>
+                            <li>Built-in microphone for calls</li>
+                            <li>Memory foam ear cushions</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <label class="me-3">Quantity:</label>
+                        <div class="quantity-selector input-group">
+                            <button class="btn btn-outline-secondary" type="button">-</button>
+                            <input type="text" class="form-control text-center" value="1">
+                            <button class="btn btn-outline-secondary" type="button">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-lg flex-grow-1">
+                            <i class="fas fa-cart-plus me-2"></i> Add to Cart
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product Details Tabs -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="productDetailTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Description</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">Specifications</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content p-3 border-top-0 border" id="productDetailTabsContent">
+                        <div class="tab-pane fade show active" id="description" role="tabpanel">
+                            <p>Our premium wireless headphones deliver an exceptional audio experience with industry-leading noise cancellation technology. Whether you're listening to music, taking calls, or watching movies, you'll enjoy crystal-clear sound quality.</p>
+                            <p>The ergonomic design with memory foam ear cushions ensures comfort even during extended use. With 30 hours of battery life, these headphones will keep up with your longest days.</p>
+                        </div>
+                        <div class="tab-pane fade" id="specs" role="tabpanel">
+                            <table class="table">
+                                <tr>
+                                    <th>Battery Life</th>
+                                    <td>Up to 30 hours</td>
+                                </tr>
+                                <tr>
+                                    <th>Charging Time</th>
+                                    <td>2 hours</td>
+                                </tr>
+                                <tr>
+                                    <th>Bluetooth Version</th>
+                                    <td>5.0</td>
+                                </tr>
+                                <tr>
+                                    <th>Weight</th>
+                                    <td>256g</td>
+                                </tr>
+                                <tr>
+                                    <th>Connection</th>
+                                    <td>Wireless, 3.5mm cable</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="reviews" role="tabpanel">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3">
+                                    <h2 class="mb-0">4.5</h2>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <p class="text-muted mb-0">Based on 128 reviews</p>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        <span class me-2>5</span>
+                                        <i class="fas fa-star text-warning me-2"></i>
+                                        <div class="progress flex-grow-1 me-2">
+                                            <div class="progress-bar bg-warning" style="width: 70%"></div>
+                                        </div>
+                                        <span>70%</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class me-2>4</span>
+                                        <i class="fas fa-star text-warning me-2"></i>
+                                        <div class="progress flex-grow-1 me-2">
+                                            <div class="progress-bar bg-warning" style="width: 20%"></div>
+                                        </div>
+                                        <span>20%</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class me-2>3</span>
+                                        <i class="fas fa-star text-warning me-2"></i>
+                                        <div class="progress flex-grow-1 me-2">
+                                            <div class="progress-bar bg-warning" style="width: 7%"></div>
+                                        </div>
+                                        <span>7%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-top pt-3">
+                                <div class="d-flex justify-content-between">
+                                    <h5>John D.</h5>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted">Posted on January 15, 2023</p>
+                                <p>The sound quality is amazing! The noise cancellation works perfectly even on noisy flights. Battery life is as advertised.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+

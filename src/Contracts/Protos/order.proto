@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Contracts.Order";
+
+package order;
+
+service OrderProtoService{
+    rpc GetOrdersCountByCustomerId(GetOrdersCountByCustomerIdRequest) returns (GetOrdersCountByCustomerIdResponse);
+
+    rpc GetOrderById(GetOrderByIdRequest) returns (OrderModel);
+
+  rpc IsProductEligibleForFeedback (IsProductEligibleForFeedbackRequest) returns (IsProductEligibleForFeedbackResponse);
+
+}
+
+message GetOrdersCountByCustomerIdRequest
+{
+    string customer_id = 1;
+}
+
+message GetOrdersCountByCustomerIdResponse
+{
+    int32 counts = 1;
+}
+
+message GetOrderByIdRequest {
+    string order_id = 1;
+}
+
+message OrderModel {
+    string order_id = 1;
+    string status = 2;
+    string total_amount = 3;
+
+}
+
+message IsProductEligibleForFeedbackRequest {
+  string customer_id = 1;
+  string product_id = 2;
+}
+
+message IsProductEligibleForFeedbackResponse {
+  bool is_eligible = 1;
+}

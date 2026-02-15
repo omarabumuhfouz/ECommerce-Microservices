@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "500 - Internal Server Error";
+    Layout = null;
+}
+
+<link rel="stylesheet" href="~/css/Error.css" />
+
+<div class="error-container error-500">
+    <div class="error-icon">⚙️</div>
+    <div class="error-code">500</div>
+    <div class="error-title">Internal Server Error</div>
+    <div class="error-message">
+        Something went wrong on our end. Please try again later or contact support.
+    </div>
+
+    <div class="error-actions">
+        <a href="/" class="btn btn-primary">Go to Homepage</a>
+        <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+    </div>
+
+    <div style="margin-top:25px;">
+        <p>Need immediate help? <a href="#" style="color:#3498db;">Contact our support team</a></p>
+    </div>
+
+    <a class="toggle-details" onclick="toggleDetails()">Show technical details</a>
+    <div class="error-details" id="errorDetails">
+        <strong>Error ID:</strong> SERVER-5A8B3C<br>
+        <strong>Time:</strong> @DateTime.Now<br>
+        <strong>Request URL:</strong> @Context.Request.Path<br>
+        <strong>Server Stack:</strong> [Hidden for security reasons]
+    </div>
+</div>
+
+<script>
+function toggleDetails() {
+    var details = document.getElementById('errorDetails');
+    var toggle = document.querySelector('.toggle-details');
+    if (details.style.display === 'block') {
+        details.style.display = 'none';
+        toggle.textContent = 'Show technical details';
+    } else {
+        details.style.display = 'block';
+        toggle.textContent = 'Hide technical details';
+    }
+}
+</script>

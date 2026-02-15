@@ -1,0 +1,15 @@
+﻿global using AutoMapper;
+global using FluentValidation;
+global using MediatR;
+global using ShoppingCartService.Application.DTOs;
+global using ShoppingCartService.Application.Services;
+global using ShoppingCartService.Application.Carts.DTOs;
+global using SharedKernel.Abstractions.Messaging;
+global using ShoppingCartService.Application.Extensions;
+global using SharedKernel.Shared;
+global using SharedKernel.Specifications;
+global using ShoppingCartService.Domain.CartManagement;
+global using SharedKernel.Abstractions;
+global using ShoppingCartService.Domain.Errors;
+global using ShoppingCartService.Application.Carts.Specifications;
+global using Microsoft.Extensions.Logging;

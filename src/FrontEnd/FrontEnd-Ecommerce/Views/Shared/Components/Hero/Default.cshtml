@@ -1,0 +1,11 @@
+@model HeroModel
+
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold">@Model.Title</h1>
+        <p class="lead">@Model.Subtitle</p>
+        <a href="@Model.ButtonUrl" class="btn btn-primary btn-lg mt-3">
+            @Model.ButtonText <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+    </div>
+</section>

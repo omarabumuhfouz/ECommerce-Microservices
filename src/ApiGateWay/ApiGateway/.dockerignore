@@ -1,0 +1,17 @@
+# Ignore build outputs
+bin/
+obj/
+*.user
+*.suo
+
+# Ignore temporary files
+*.log
+*.vs/
+.vscode/
+
+# Ignore npm / node_modules if you have frontend stuff
+node_modules/
+
+# Ignore secrets / configs
+*.env
+*.local

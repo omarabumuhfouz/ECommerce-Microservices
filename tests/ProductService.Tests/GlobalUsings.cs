@@ -1,0 +1,19 @@
+﻿global using AutoMapper;
+global using FluentAssertions;
+global using Microsoft.Extensions.Localization;
+global using Moq;
+global using ProductService.Application.Bases;
+global using ProductService.Application.Categories.Commands;
+global using ProductService.Application.Categories.Queries;
+global using ProductService.Application.Exceptions;
+global using ProductService.Application.Products.Commands;
+global using ProductService.Application.Products.Queries;
+global using ProductService.Domain.Entities;
+global using ProductService.Domain.Exceptions;
+global using ProductService.Domain.Interfaces;
+global using ProductService.Domain.ValueObjects;
+global using ProductService.Infrastructure.Data;
+global using ProductService.Infrastructure.Repositories;
+global using ProductService.Tests;
+global using System.Net;
+

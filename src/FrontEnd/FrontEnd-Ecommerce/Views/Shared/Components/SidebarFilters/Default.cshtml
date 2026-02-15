@@ -1,0 +1,45 @@
+@model SidebarFiltersModel
+
+<div class="col-lg-3">
+    <div class="category-filter">
+
+        <!-- Categories -->
+        <h5>Categories</h5>
+        @foreach (var cat in Model.Categories)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="@cat.Id" @(cat.Checked ? "checked" : "")>
+                <label class="form-check-label" for="@cat.Id">@cat.Name</label>
+            </div>
+        }
+
+        <hr />
+
+        <!-- Price Range -->
+        <h5>Price Range</h5>
+        <div class="range-slider mb-3">
+            <input type="range" class="form-range" min="@Model.MinPrice" max="@Model.MaxPrice" step="10" id="priceRange">
+            <div class="d-flex justify-content-between">
+                <span>$@Model.MinPrice</span>
+                <span>$@Model.MaxPrice</span>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Sort By -->
+        <h5>Sort By</h5>
+        <select class="form-select">
+            <option selected="@(Model.SelectedSort == "Recommended")">Recommended</option>
+            <option selected="@(Model.SelectedSort == "Price: Low to High")">Price: Low to High</option>
+            <option selected="@(Model.SelectedSort == "Price: High to Low")">Price: High to Low</option>
+            <option selected="@(Model.SelectedSort == "Highest Rated")">Highest Rated</option>
+            <option selected="@(Model.SelectedSort == "Newest First")">Newest First</option>
+        </select>
+
+        <hr />
+
+        <button class="btn btn-primary w-100">Apply Filters</button>
+        <button class="btn btn-outline-secondary w-100 mt-2">Reset Filters</button>
+    </div>
+</div>

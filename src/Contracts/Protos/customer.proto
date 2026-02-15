@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Contracts.Customer";
+
+package customer;
+
+service CustomerProtoService {
+  
+  rpc GetById (GetCustomerByIdRequest) returns (CustomerModel);
+  rpc GetByUserID (GetCustomerByUserIdRequest) returns (CustomerModel);
+  rpc AddCustomer (AddCustomerRequest) returns (AddCustomerResponse);
+  rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerResponse);
+rpc IsCustomerExistsById (IsCustomerExistsByIdRequest) returns (IsCustomerExistsResponse);
+  rpc IsCustomerExistsByUserId(IsCustomerExistsByUserIdRequest) returns (IsCustomerExistsResponse);
+
+}
+
+
+// Common messages
+message AddressModel {
+  string id = 1;
+  string customer_id = 2;
+  string address_line1 = 3;
+  string address_line2 = 4;
+  string city = 5;
+  string state = 6;
+  string country = 7;
+  string postal_code = 8;
+}
+
+message CustomerModel {
+  string id = 1;
+  string user_id = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string phone_number = 5;
+  repeated AddressModel addresses = 6;
+}
+
+// Request messages
+message GetCustomerByIdRequest {
+  string customer_id = 1;
+}
+
+message IsCustomerExistsByUserIdRequest {
+  string user_id = 1;
+}
+
+message GetCustomerByUserIdRequest{
+  string user_id = 1;
+}
+
+message AddCustomerRequest {
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string phone_number = 4;
+}
+
+message UpdateCustomerRequest {
+  string user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string phone_number = 4;
+}
+
+message IsCustomerExistsByIdRequest {
+  string customer_id = 1;
+}
+
+message AddCustomerResponse {
+  string customer_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message UpdateCustomerResponse {
+  bool success = 1;
+}
+
+message IsCustomerExistsResponse {
+  bool exists = 1;
+}

@@ -1,0 +1,67 @@
+    /* Custom Notification Styles */
+.custom-notification {
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid transparent;
+    cursor: default !important;
+}
+
+.custom-notification.alert-success {
+    border-left-color: #198754;
+}
+
+.custom-notification.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.custom-notification.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+.custom-notification.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.custom-close {
+    position: relative;
+    z-index: 2;
+    cursor: pointer !important;
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: rgba(0, 0, 0, 0.2);
+    width: 100%;
+    transform-origin: left;
+    animation: progress 5s linear forwards;
+    pointer-events: none;
+}
+
+@keyframes progress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+/* Custom positioning for notifications */
+.toast-container {
+    max-width: 400px;
+}
+
+/* Ensure proper z-index for close button */
+.btn-close.custom-close {
+    z-index: 2;
+    cursor: pointer;
+}
+
+/* Make sure the alert content is not clickable */
+.custom-notification .d-flex {
+    pointer-events: none;
+}
+
+/* Only the close button should be clickable */
+.custom-close {
+    pointer-events: auto !important;
+}

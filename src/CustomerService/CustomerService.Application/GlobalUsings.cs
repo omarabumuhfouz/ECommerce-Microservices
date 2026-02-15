@@ -1,0 +1,16 @@
+﻿global using AutoMapper;
+global using CustomerService.Application.Addresses.Commands;
+global using CustomerService.Application.DTOs;
+global using CustomerService.Domain.Entities;
+global using FluentValidation;
+global using MediatR;
+global using Microsoft.Extensions.Localization;
+global using CustomerService.Application.Customers.DTOs;
+global using CustomerService.Application.Extensions;
+global using SharedKernel.Abstractions.Messaging;
+global using SharedKernel.Abstractions;
+global using CustomerService.Domain.Specifications.Customers;
+global using CustomerService.Domain.Constants;
+global using CustomerService.Domain.Errors;
+global using Microsoft.Extensions.Logging;
+global using SharedKernel.Shared;

@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "401 - Unauthorized";
+    Layout = null;
+}
+
+<link rel="stylesheet" href="~/css/Error.css" />
+
+<div class="error-container error-401">
+    <div class="error-icon">🔐</div>
+    <div class="error-code">401</div>
+    <div class="error-title">Unauthorized Access</div>
+    <div class="error-message">You need to be logged in to access this page.</div>
+
+    <div class="error-actions">
+        <a href="/Account/Login" class="btn btn-primary">Login</a>
+        <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+    </div>
+</div>

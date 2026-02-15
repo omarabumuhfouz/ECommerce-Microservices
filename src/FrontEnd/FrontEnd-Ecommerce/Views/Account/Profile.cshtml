@@ -1,0 +1,391 @@
+@model FrontEnd_Ecommerce.ViewModels.ProfileViewModel;
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<link rel="stylesheet" href="~/css/Profile.css" asp-append-version="true" />
+
+<input type="hidden" asp-for="@Model.Id" />
+
+<div class="container mt-4">
+    <div class="profile-container">
+        <!-- Main Profile Card -->
+        <div class="card profile-card">
+            <!-- Header -->
+            <div class="profile-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1">
+                            <i class="fas fa-user-circle me-2"></i>User Profile
+                        </h2>
+                        <p class="mb-0 opacity-75">Manage your account information and settings</p>
+                    </div>
+                    <span class="badge bg-light text-dark fs-6">
+                        <i class="fas fa-id-badge me-1"></i>@Model.Roles.Count Role(s)
+                    </span>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body p-4">
+                <!-- User Avatar and Basic Info -->
+                <div class="row align-items-center mb-4">
+                    <div class="col-auto">
+                        <div class="avatar-circle">
+                            @if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
+                            {
+                                @Model.FirstName[0]@Model.LastName[0]
+                            }
+                            else
+                            {
+                                <i class="fas fa-user"></i>
+                            }
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h3 class="mb-2">@Model.FirstName @Model.LastName</h3>
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-envelope me-1"></i>@Model.Email
+                        </p>
+                        <small class="text-muted">
+                            <i class="fas fa-id-card me-1"></i>ID: <span class="user-id">@Model.Id</span>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Detailed Information -->
+                <div class="row">
+                    <!-- Personal Information -->
+                    <div class="col-lg-6 mb-4">
+                        <h5 class="section-title">
+                            <i class="fas fa-user me-2 text-primary"></i>Personal Information
+                        </h5>
+                        
+                        <div class="info-group">
+                            <div class="info-label">FIRST NAME</div>
+                            <div class="info-value">@Model.FirstName</div>
+                        </div>
+                        
+                        <div class="info-group">
+                            <div class="info-label">LAST NAME</div>
+                            <div class="info-value">@Model.LastName</div>
+                        </div>
+                        
+                        <div class="info-group">
+                            <div class="info-label">EMAIL ADDRESS</div>
+                            <div class="info-value">
+                                <a href="mailto:@Model.Email" class="text-decoration-none">
+                                    <i class="fas fa-envelope me-1 text-primary"></i>@Model.Email
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <div class="col-lg-6 mb-4">
+                        <h5 class="section-title">
+                            <i class="fas fa-shield-alt me-2 text-success"></i>Account Information
+                        </h5>
+                        
+                        <div class="info-group">
+                            <div class="info-label">USER ID</div>
+                            <div class="info-value">
+                                <span class="user-id">@Model.Id</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-group">
+                            <div class="info-label">ACCOUNT ROLES</div>
+                            <div class="roles-container">
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <span class="role-badge">@role</span>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="info-group">
+                            <div class="info-label">ACCOUNT STATUS</div>
+                            <div class="info-value">
+                                <span class="badge bg-success fs-6">@(Model.IsActive ? "Active" : "UnActive")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Management Section -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="section-title mb-0">
+                                <i class="fas fa-map-marker-alt me-2 text-info"></i>Addresses
+                            </h5>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                                <i class="fas fa-plus me-1"></i>Add New Address
+                            </button>
+                        </div>
+                        
+                        @if (Model.Addresses.Any())
+                        {
+                            <div class="addresses-container">
+                                @foreach (var address in Model.Addresses)
+                                {
+                                    <div class="address-card @(address.IsDefault ? "default-address" : "")">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="address-content">
+                                                @if (address.IsDefault)
+                                                {
+                                                    <span class="badge bg-primary mb-2">Default Address</span>
+                                                }
+                                                <h6 class="address-type">@address.AddressType</h6>
+                                                <p class="mb-1">@address.Street</p>
+                                                <p class="mb-1">@address.City, @address.State @address.ZipCode</p>
+                                                <p class="mb-0">@address.Country</p>
+                                            </div>
+                                            <div class="address-actions">
+                                                <button class="btn btn-sm btn-outline-primary edit-address" 
+                                                        data-address-id="@address.Id"
+                                                        data-street="@address.Street"
+                                                        data-city="@address.City"
+                                                        data-state="@address.State"
+                                                        data-zipcode="@address.ZipCode"
+                                                        data-country="@address.Country"
+                                                        data-address-type="@address.AddressType"
+                                                        data-is-default="@address.IsDefault">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger delete-address" data-address-id="@address.Id">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 empty-addresses">
+                                <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No Addresses Added</h5>
+                                <p class="text-muted">Add your first address to make checkout easier</p>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                                    <i class="fas fa-plus me-1"></i>Add Your First Address
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a asp-controller="Account" asp-action="EditProfile" asp-route-id="@Model.Id" class="btn btn-profile btn-profile-primary">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </a>
+                            <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-outline-primary btn-profile">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-profile">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card text-center">
+                    <div class="card-body py-4">
+                        <i class="fas fa-calendar-check fa-2x text-primary mb-3"></i>
+                        <h6 class="text-muted mb-2">ACTIVE SINCE</h6>
+                        <p class="h5 text-dark mb-0">@Model.ActiveSince</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card text-center">
+                    <div class="card-body py-4">
+                        <i class="fas fa-tasks fa-2x text-success mb-3"></i>
+                        <h6 class="text-muted mb-2">TOTAL ORDERS</h6>
+                        <p class="h5 text-dark mb-0">@Model.TotalOrders</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card text-center">
+                    <div class="card-body py-4">
+                        <i class="fas fa-map-marker-alt fa-2x text-info mb-3"></i>
+                        <h6 class="text-muted mb-2">SAVED ADDRESSES</h6>
+                        <p class="h5 text-dark mb-0">@Model.Addresses.Count</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addressForm" asp-controller="Account" asp-action="SaveAddress" method="post">
+                <input type="hidden" id="addressId" name="Id" value="0" />
+                <input type="hidden" asp-for="Id" />
+                
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="addressType" class="form-label">Address Type</label>
+                        <select class="form-select" id="addressType" name="AddressType" required>
+                            <option value="">Select Type</option>
+                            <option value="Home">Home</option>
+                            <option value="Work">Work</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="street" class="form-label">Street Address</label>
+                        <input type="text" class="form-control" id="street" name="Street" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="City" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="state" class="form-label">State/Province</label>
+                            <input type="text" class="form-control" id="state" name="State" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="zipCode" class="form-label">Zip/Postal Code</label>
+                            <input type="text" class="form-control" id="zipCode" name="ZipCode" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" class="form-control" id="country" name="Country" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="isDefault" name="IsDefault">
+                        <label class="form-check-label" for="isDefault">
+                            Set as default address
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Address</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteAddressModal" tabindex="-1" aria-labelledby="deleteAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAddressModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this address? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete Address</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            let addressToDelete = null;
+            
+            // Edit address button click
+            $('.edit-address').click(function() {
+                const addressId = $(this).data('address-id');
+                const street = $(this).data('street');
+                const city = $(this).data('city');
+                const state = $(this).data('state');
+                const zipCode = $(this).data('zipcode');
+                const country = $(this).data('country');
+                const addressType = $(this).data('address-type');
+                const isDefault = $(this).data('is-default');
+                
+                $('#addressId').val(addressId);
+                $('#street').val(street);
+                $('#city').val(city);
+                $('#state').val(state);
+                $('#zipCode').val(zipCode);
+                $('#country').val(country);
+                $('#addressType').val(addressType);
+                $('#isDefault').prop('checked', isDefault);
+                
+                $('#addAddressModalLabel').text('Edit Address');
+                $('#addAddressModal').modal('show');
+            });
+            
+            // Add new address - reset form
+            $('#addAddressModal').on('show.bs.modal', function(e) {
+                if (!$(e.relatedTarget).hasClass('edit-address')) {
+                    $('#addressForm')[0].reset();
+                    $('#addressId').val(0);
+                    $('#addAddressModalLabel').text('Add New Address');
+                }
+            });
+            
+            // Delete address button click
+            $('.delete-address').click(function() {
+                addressToDelete = $(this).data('address-id');
+                $('#deleteAddressModal').modal('show');
+            });
+            
+            // Confirm delete
+            $('#confirmDelete').click(function() {
+                if (addressToDelete) {
+                    // Submit delete form
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '@Url.Action("DeleteAddress", "Account")';
+                    
+                    const addressIdInput = document.createElement('input');
+                    addressIdInput.type = 'hidden';
+                    addressIdInput.name = 'addressId';
+                    addressIdInput.value = addressToDelete;
+                    
+                    const userIdInput = document.createElement('input');
+                    userIdInput.type = 'hidden';
+                    userIdInput.name = 'userId';
+                    userIdInput.value = '@Model.Id';
+                    
+                    form.appendChild(addressIdInput);
+                    form.appendChild(userIdInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    </script>
+}

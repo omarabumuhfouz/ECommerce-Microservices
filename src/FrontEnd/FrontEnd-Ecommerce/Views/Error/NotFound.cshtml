@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "404 - Not Found";
+    Layout = null;
+    
+}
+
+<link rel="stylesheet" href="~/css/Error.css" />
+
+<div class="error-container error-404">
+    <div class="error-icon">🔍</div>
+    <div class="error-code">404</div>
+    <div class="error-title">Page Not Found</div>
+    <div class="error-message">
+        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+    </div>
+
+    <div class="error-actions">
+        <a href="/" class="btn btn-primary">Go to Homepage</a>
+        <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+    </div>
+
+    <div style="margin-top:25px;">
+        <input type="text" placeholder="Search our site..." style="padding:10px;width:70%;border:1px solid #ddd;border-radius:50px;">
+        <button style="padding:10px 20px;background:#3498db;color:white;border:none;border-radius:50px;margin-left:5px;">Search</button>
+    </div>
+</div>

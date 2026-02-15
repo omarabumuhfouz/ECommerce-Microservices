@@ -1,0 +1,52 @@
+{
+  "Customers": {
+    "ADDED": "Customer account created successfully.",
+    "UPDATED": "Customer updated successfully.",
+    "NOT_FOUND": "We couldn't find a customer matching your request.",
+    "HAS_NO_ADDRESSES": "This customer does not have any addresses.",
+    "NOT_FOUND_BY_USER": "Customer not found by user id.",
+    "USER_ALREADY_EXISTS": "A customer with this user account already exists. Please use a different user.",
+    
+    "USER_ID_REQUIRED": "UserId is required.",
+    "FIRST_NAME_REQUIRED": "First name is required.",
+    "FIRST_NAME_LENGTH": "First name must be between {0} and {1} characters long.",
+    "FIRST_NAME_LETTERS_ONLY": "First name must contain only letters.",
+    "LAST_NAME_REQUIRED": "Last name is required.",
+    "LAST_NAME_LENGTH": "Last name must be between {0} and {1} characters long.",
+    "LAST_NAME_LETTERS_ONLY": "Last name must contain only letters.",
+    "PHONE_NUMBER_REQUIRED": "Phone number is required.",
+    "PHONE_NUMBER_INVALID": "Phone number must contain only digits and optionally start with '+', length between {0} and {1}."
+  },
+  "Addresses": {
+    "DELETED": "The address has been removed from the account.",
+    "ADDED": "The address has been added successfully.",
+    "UPDATED": "The address has been updated successfully.",
+    "NOT_FOUND": "Address not found.",
+    "NOT_BELONG_TO_CUSTOMER": "This address does not belong to your account.",
+    "SET_DEFAULT_SUCCESS": "The default address was updated successfully.",
+    "ADDRESS_LINE1_REQUIRED": "Address Line 1 is required.",
+    "ADDRESS_LINE1_MAX_LENGTH": "Address Line 1 cannot exceed {0} characters.",
+    "ADDRESS_LINE2_MAX_LENGTH": "Address Line 2 cannot exceed {0} characters.",
+    "CITY_REQUIRED": "City is required.",
+    "CITY_MAX_LENGTH": "City cannot exceed {0} characters.",
+    "STATE_MAX_LENGTH": "State cannot exceed {0} characters.",
+    "POSTAL_CODE_REQUIRED": "Postal code is required.",
+    "POSTAL_CODE_MAX_LENGTH": "Postal code cannot exceed {0} characters.",
+    "COUNTRY_REQUIRED": "Country is required.",
+    "COUNTRY_MAX_LENGTH": "Country cannot exceed {0} characters.",
+    "CUSTOMER_ID_REQUIRED": "CustomerId is required.",
+    "ADDRESS_ID_REQUIRED": "AddressId is required."
+  },
+  "Operations": {
+    "SUCCESS": "The operation was completed successfully.",
+    "FAILED": "The operation failed. Please try again later.",
+    "NOT_FOUND": "The requested resource could not be found."
+  },
+  "Validations": {
+    "VALIDATION_ERROR_OCCURRED": "One or more validation errors occurred. Please check your input.",
+    "ARGUMENT_OUT_OF_RANGE": "One of the arguments provided is out of range.",
+    "INVALID_OPERATION": "The requested operation is invalid in the current context.",
+    "REQUIRED_PARAMETER_NULL": "Required parameter '{0}' was null.",
+    "UNEXPECTED_ERROR": "An unexpected error occurred. Please try again later."
+  }
+}

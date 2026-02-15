@@ -1,0 +1,32 @@
+    .profile-edit-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .profile-edit-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .profile-edit-header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        padding: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-profile-edit {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.6rem 1.5rem;
+    }

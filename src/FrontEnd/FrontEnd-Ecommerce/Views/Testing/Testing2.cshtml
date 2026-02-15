@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - E-commerce MVC</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        
+        body {
+            overflow-x: hidden;
+            background-color: #f8f9fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        #wrapper {
+            display: flex;
+        }
+        
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: var(--primary);
+            color: #fff;
+            transition: all 0.3s;
+            min-height: 100vh;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: var(--primary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #sidebar ul.components {
+            padding: 20px 0;
+        }
+        
+        #sidebar ul li a {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        #sidebar ul li a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 25px;
+        }
+        
+        #sidebar ul li.active > a {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #fff;
+        }
+        
+        #content {
+            width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        
+        .navbar {
+            background: #fff;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 1rem 1.5rem;
+        }
+        
+        .card {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card .card-header {
+            background: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .bg-gradient-primary {
+            background-color: var(--primary);
+            background-image: linear-gradient(180deg, var(--primary) 10%, #224abe 100%);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.2);
+        }
+        
+        .stat-card {
+            border-left: 4px solid;
+            border-radius: 0.5rem;
+        }
+        
+        .stat-card.primary { border-left-color: var(--primary); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.info { border-left-color: var(--info); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        
+        .sidebar-icon {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50%;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .recent-orders {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 0.8rem 1.2rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            margin: 0 2px;
+        }
+        
+        @* @media (max-width: 768px) {
+            #sidebar {
+                min-width: 80px;
+                max-width: 80px;
+                text-align: center;
+            }
+            
+            #sidebar .sidebar-header h3,
+            #sidebar ul li a span {
+                display: none;
+            }
+            
+            #sidebar ul li a {
+                padding: 20px 10px;
+                font-size: 0.85em;
+            }
+            
+            #sidebar ul li a i {
+                margin-right: 0;
+                font-size: 1.5em;
+            }
+            
+            #content {
+                padding: 15px 10px;
+            }
+        } *@
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <h3>Admin Panel</h3>
+            </div>
+            
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="#" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt sidebar-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="orders">
+                        <i class="fas fa-shopping-cart sidebar-icon"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="payments">
+                        <i class="fas fa-money-bill-wave sidebar-icon"></i>
+                        <span>Payments</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="cancellations">
+                        <i class="fas fa-ban sidebar-icon"></i>
+                        <span>Cancellations</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="feedbacks">
+                        <i class="fas fa-comments sidebar-icon"></i>
+                        <span>Feedbacks</span>
+                        <span class="notification-badge">5</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="refunds">
+                        <i class="fas fa-undo-alt sidebar-icon"></i>
+                        <span>Refunds</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="reports">
+                        <i class="fas fa-chart-bar sidebar-icon"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="products">
+                        <i class="fas fa-box sidebar-icon"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="customers">
+                        <i class="fas fa-users sidebar-icon"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-sign-out-alt sidebar-icon"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Content -->
+        <div id="content">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light mb-4">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <div class="ms-auto d-flex align-items-center">
+                        <div class="dropdown me-3">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge">3</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                                <li><a class="dropdown-item" href="#">New order #1234</a></li>
+                                <li><a class="dropdown-item" href="#">Customer cancellation request</a></li>
+                                <li><a class="dropdown-item" href="#">Payment received</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="dropdown">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle"></i> Admin User
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section active">
+                <div class="container-fluid">
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card primary h-100">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Orders</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">1,248</div>
+                                            <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 12% since last month</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-shopping-cart fa-2x text-primary"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card success h-100">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Revenue</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$54,823</div>
+                                            <div class="mt-2 text-success small"><i class="fas fa-arrow-up me-1"></i> 8.5% since last month</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-success"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card info h-100">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Pending Orders</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                            <div class="mt-2 text-danger small"><i class="fas fa-arrow-down me-1"></i> 3 since yesterday</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-info"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card warning h-100">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Cancellation Requests</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">7</div>
+                                            <div class="mt-2 text-warning small"><i class="fas fa-exclamation-circle me-1"></i> Needs attention</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-ban fa-2x text-warning"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="row mb-4">
+                        <!-- Sales Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card mb-4">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Revenue Overview</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                            <li><a class="dropdown-item" href="#">Export Data</a></li>
+                                            <li><a class="dropdown-item" href="#">Print Chart</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-area">
+                                        <canvas id="revenueChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+                        
+                        <!-- Pie Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card mb-4">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Order Status</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-pie pt-4 pb-2">
+                                        <canvas id="orderStatusChart" height="250"></canvas>
+                                    </div>
+                                    <div class="mt-4 text-center small">
+                                        <span class="me-2"><i class="fas fa-circle text-primary"></i> Completed</span>
+                                        <span class="me-2"><i class="fas fa-circle text-success"></i> Processing</span>
+                                        <span class="me-2"><i class="fas fa-circle text-info"></i> Pending</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+                    <!-- Recent Orders -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                                    <a href="#" class="btn btn-sm btn-primary">View All</a>
+                                </div>
+                                <div class="card-body recent-orders">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order ID</th>
+                                                    <th>Customer</th>
+                                                    <th>Date</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>#ORD-7842</td>
+                                                    <td>John Smith</td>
+                                                    <td>2023-10-15</td>
+                                                    <td>$128.50</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td><button class="btn btn-sm btn-primary">View</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#ORD-7841</td>
+                                                    <td>Emma Johnson</td>
+                                                    <td>2023-10-15</td>
+                                                    <td>$242.00</td>
+                                                    <td><span class="badge bg-info">Processing</span></td>
+                                                    <td><button class="btn btn-sm btn-primary">View</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#ORD-7840</td>
+                                                    <td>Michael Brown</td>
+                                                    <td>2023-10-14</td>
+                                                    <td>$87.99</td>
+                                                    <td><span class="badge bg-warning">Pending</span></td>
+                                                    <td><button class="btn btn-sm btn-primary">View</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#ORD-7839</td>
+                                                    <td>Sarah Wilson</td>
+                                                    <td>2023-10-14</td>
+                                                    <td>$356.75</td>
+                                                    <td><span class="badge bg-danger">Cancelled</span></td>
+                                                    <td><button class="btn btn-sm btn-primary">View</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#ORD-7838</td>
+                                                    <td>David Miller</td>
+                                                    <td>2023-10-13</td>
+                                                    <td>$54.25</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td><button class="btn btn-sm btn-primary">View</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Feedback -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Recent Customer Feedback</h6>
+                                    <a href="#" class="btn btn-sm btn-primary">View All</a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-6 mb-4">
+                                            <div class="card bg-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="card-title">John Smith</h6>
+                                                        <div class="text-warning">
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="far fa-star"></i>
+                                                        </div>
+                                                    </div>
+                                                    <p class="card-text">"The product was good but delivery was delayed by 2 days. Otherwise happy with the purchase."</p>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small class="text-muted">Order #ORD-7842</small>
+                                                        <small class="text-muted">October 15, 2023</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 mb-4">
+                                            <div class="card bg-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="card-title">Emma Johnson</h6>
+                                                        <div class="text-warning">
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                        </div>
+                                                    </div>
+                                                    <p class="card-text">"Excellent product quality and fast shipping. Will definitely shop again from this store!"</p>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small class="text-muted">Order #ORD-7841</small>
+                                                        <small class="text-muted">October 15, 2023</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div id="orders" class="section">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="m-0 font-weight-bold text-primary">Order Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="orderFilter">Filter by Status:</label>
+                                        <select class="form-control" id="orderFilter">
+                                            <option value="all">All Orders</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="processing">Processing</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="dateFilter">Filter by Date:</label>
+                                        <input type="date" class="form-control" id="dateFilter">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="searchOrders">Search Orders:</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="Search by order ID, customer name...">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Customer</th>
+                                            <th>Date</th>
+                                            <th>Items</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#ORD-7842</td>
+                                            <td>John Smith</td>
+                                            <td>2023-10-15</td>
+                                            <td>3</td>
+                                            <td>$128.50</td>
+                                            <td><span class="badge bg-success">Completed</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#ORD-7841</td>
+                                            <td>Emma Johnson</td>
+                                            <td>2023-10-15</td>
+                                            <td>5</td>
+                                            <td>$242.00</td>
+                                            <td><span class="badge bg-info">Processing</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#ORD-7840</td>
+                                            <td>Michael Brown</td>
+                                            <td>2023-10-14</td>
+                                            <td>2</td>
+                                            <td>$87.99</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#ORD-7839</td>
+                                            <td>Sarah Wilson</td>
+                                            <td>2023-10-14</td>
+                                            <td>4</td>
+                                            <td>$356.75</td>
+                                            <td><span class="badge bg-danger">Cancelled</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#ORD-7838</td>
+                                            <td>David Miller</td>
+                                            <td>2023-10-13</td>
+                                            <td>1</td>
+                                            <td>$54.25</td>
+                                            <td><span class="badge bg-success">Completed</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Section -->
+            <div id="payments" class="section">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="m-0 font-weight-bold text-primary">Payment Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" id="paymentTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="all-payments-tab" data-bs-toggle="tab" data-bs-target="#all-payments" type="button" role="tab">All Payments</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pending-payments-tab" data-bs-toggle="tab" data-bs-target="#pending-payments" type="button" role="tab">Pending</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="completed-payments-tab" data-bs-toggle="tab" data-bs-target="#completed-payments" type="button" role="tab">Completed</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="failed-payments-tab" data-bs-toggle="tab" data-bs-target="#failed-payments" type="button" role="tab">Failed</button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content p-3 border border-top-0" id="paymentTabsContent">
+                                <div class="tab-pane fade show active" id="all-payments" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Payment ID</th>
+                                                    <th>Order ID</th>
+                                                    <th>Customer</th>
+                                                    <th>Date</th>
+                                                    <th>Amount</th>
+                                                    <th>Method</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>#PAY-8956</td>
+                                                    <td>#ORD-7842</td>
+                                                    <td>John Smith</td>
+                                                    <td>2023-10-15</td>
+                                                    <td>$128.50</td>
+                                                    <td>Credit Card</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#PAY-8955</td>
+                                                    <td>#ORD-7841</td>
+                                                    <td>Emma Johnson</td>
+                                                    <td>2023-10-15</td>
+                                                    <td>$242.00</td>
+                                                    <td>PayPal</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#PAY-8954</td>
+                                                    <td>#ORD-7840</td>
+                                                    <td>Michael Brown</td>
+                                                    <td>2023-10-14</td>
+                                                    <td>$87.99</td>
+                                                    <td>Credit Card</td>
+                                                    <td><span class="badge bg-warning">Pending</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#PAY-8953</td>
+                                                    <td>#ORD-7839</td>
+                                                    <td>Sarah Wilson</td>
+                                                    <td>2023-10-14</td>
+                                                    <td>$356.75</td>
+                                                    <td>Bank Transfer</td>
+                                                    <td><span class="badge bg-danger">Failed</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>#PAY-8952</td>
+                                                    <td>#ORD-7838</td>
+                                                    <td>David Miller</td>
+                                                    <td>2023-10-13</td>
+                                                    <td>$54.25</td>
+                                                    <td>Credit Card</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-sm btn-info btn-action"><i class="fas fa-edit"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pending-payments" role="tabpanel">
+                                    <p class="text-center py-4">No pending payments at the moment.</p>
+                                </div>
+                                <div class="tab-pane fade" id="completed-payments" role="tabpanel">
+                                    <p class="text-center py-4">Displaying completed payments...</p>
+                                </div>
+                                <div class="tab-pane fade" id="failed-payments" role="tabpanel">
+                                    <p class="text-center py-4">Displaying failed payments...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancellations Section -->
+            <div id="cancellations" class="section">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="m-0 font-weight-bold text-primary">Cancellation Requests</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Request ID</th>
+                                            <th>Order ID</th>
+                                            <th>Customer</th>
+                                            <th>Request Date</th>
+                                            <th>Reason</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#CAN-1254</td>
+                                            <td>#ORD-7839</td>
+                                            <td>Sarah Wilson</td>
+                                            <td>2023-10-14</td>
+                                            <td>Changed mind</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success btn-action"><i class="fas fa-check"></i> Approve</button>
+                                                <button class="btn btn-sm btn-danger btn-action"><i class="fas fa-times"></i> Reject</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#CAN-1253</td>
+                                            <td>#ORD-7821</td>
+                                            <td>Robert Davis</td>
+                                            <td>2023-10-13</td>
+                                            <td>Found better price</td>
+                                            <td><span class="badge bg-success">Approved</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i> View</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#CAN-1252</td>
+                                            <td>#ORD-7818</td>
+                                            <td>Jennifer Lee</td>
+                                            <td>2023-10-12</td>
+                                            <td>Delivery delay</td>
+                                            <td><span class="badge bg-danger">Rejected</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i> View</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional sections for Feedbacks, Refunds, Reports, Products, and Customers would go here -->
+            <!-- For brevity, I've implemented the main sections. The other sections would follow a similar structure -->
+
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle sidebar
+        $(document).ready(function() {
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar').toggleClass('active');
+            });
+            
+            // Section navigation
+            $('a[data-section]').on('click', function(e) {
+                e.preventDefault();
+                const targetSection = $(this).data('section');
+                
+                // Update active menu item
+                $('a[data-section]').parent().removeClass('active');
+                $(this).parent().addClass('active');
+                
+                // Show target section, hide others
+                $('.section').removeClass('active');
+                $('#' + targetSection).addClass('active');
+            });
+            
+            // Revenue Chart
+            var ctx = document.getElementById("revenueChart").getContext('2d');
+            var revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [12500, 19000, 18000, 22000, 25000, 28000, 32000, 35000, 40000, 43000, 48000, 54823],
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        pointRadius: 3,
+                        pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                        pointBorderColor: 'rgba(78, 115, 223, 1)',
+                        pointHoverRadius: 3,
+                        pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+                        pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        fill: true,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Order Status Chart
+            var ctx2 = document.getElementById("orderStatusChart").getContext('2d');
+            var orderStatusChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ["Completed", "Processing", "Pending"],
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+
+
+
+
+    </script>
+</body>
+</html>

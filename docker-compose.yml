@@ -1,0 +1,358 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Password12345!"
+    ports:
+      - "9111:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  authservice:
+    build:
+      context: .
+      dockerfile: src/AuthService/Dockerfile
+    container_name: authservice
+    ports:
+      - "7000:7000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7000
+      - MessageBroker__Host=rabbitmq
+      - MessageBroker__Username=guest
+      - MessageBroker__Password=guest
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  customerservice:
+    build:
+      context: .
+      dockerfile: src/CustomerService/Dockerfile
+    container_name: customerservice
+    ports:
+      - "7001:7001" # REST
+      - "5001:5001" # ✅ ADD THIS: gRPC
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # ✅ UPDATE THIS: Include both ports separated by a semicolon
+      - ASPNETCORE_URLS=http://+:7001;http://+:5001
+      - MessageBroker__Host=rabbitmq
+      - MessageBroker__Username=guest
+      - MessageBroker__Password=guest
+      - Kestrel__Endpoints__Http__Url=http://+:7001
+      - Kestrel__Endpoints__Http__Protocols=Http1
+      - Kestrel__Endpoints__Grpc__Url=http://+:5001
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  productservice:
+    build:
+      context: .
+      dockerfile: src/ProductService/Dockerfile
+    container_name: productservice
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Define two ports: one for REST (7002) and one for gRPC (5002)
+      - ASPNETCORE_URLS=http://+:7002;http://+:5002
+      # This is the "Magic" setting for Kestrel configuration via Env Vars
+      - Kestrel__Endpoints__Http__Url=http://+:7002
+      - Kestrel__Endpoints__Http__Protocols=Http1
+      - Kestrel__Endpoints__Grpc__Url=http://+:5002
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
+    ports:
+      - "7002:7002"  # REST/Scalar Port
+      - "5002:5002"  # gRPC Port"
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  orderservice:
+    build:
+      context: .
+      dockerfile: src/OrderService/Dockerfile
+    container_name: orderservice
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7004;http://+:5004
+      - Kestrel__Endpoints__Http__Url=http://+:7004
+      - Kestrel__Endpoints__Http__Protocols=Http1
+      - Kestrel__Endpoints__Grpc__Url=http://+:5004
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
+    ports:
+      - "7004:7004"  
+      - "5004:5004"  
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  cartservice:
+    build:
+      context: .
+      dockerfile: src/ShoppingCartService/Dockerfile
+    container_name: cartservice
+    ports:
+      - "7003:7003"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7003
+    # ✅ FIX 2: Updated ProductService to also wait for Redis (prevents crashes)
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  paymentservice:
+    build:
+      context: .
+      dockerfile: src/PaymentService/Dockerfile
+    container_name: paymentservice
+    ports:
+      - "7005:7005"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7005
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  cancellationservice:
+    build:
+      context: .
+      dockerfile: src/CancellationService/Dockerfile
+    container_name: cancellationservice
+    ports:
+      - "7006:7006"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7006
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  feedbackservice:
+    build:
+      context: .
+      dockerfile: src/FeedbackService/Dockerfile
+    container_name: feedbackservice
+    ports:
+      - "7007:7007"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7007
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/ApiGateWay/ApiGateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    environment:
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - ASPNETCORE_URLS=http://+:9000
+    networks:
+      - ecommerce
+    restart: unless-stopped
+    depends_on:
+    - sqlserver
+      - authservice
+      - customerservice
+      - productservice
+      - cartservice
+      - orderservice
+      - paymentservice
+      - cancellationservice
+      - feedbackservice
+      - ecommerce.seq
+      - health-ui
+      
+  frontend:
+    build:
+      context: ./src/FrontEnd/FrontEnd-Ecommerce
+      dockerfile: Dockerfile
+    container_name: mvc-frontend
+    ports:
+      - "9090:9090"
+    environment:
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - ASPNETCORE_URLS=http://+:9090
+    networks:
+      - ecommerce
+    depends_on:
+      - api-gateway
+  
+  redis:
+    image: redis:alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    # ✅ Healthcheck required for 'condition: service_healthy' to work
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"] 
+      interval: 2s
+      timeout: 2s
+      retries: 5
+    networks:
+      - ecommerce
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"   # For your app to connect
+      - "15672:15672"  # For the web management UI
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq/
+    restart: unless-stopped
+    networks:
+      - ecommerce
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ecommerce.seq:
+    image: datalust/seq:latest
+    container_name: ecommerce.seq
+    volumes:
+      - ./containers/seq:/data
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=Password123!
+    networks:
+      - ecommerce
+    ports:
+      - 5341:5341
+      - 8081:80
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - ecommerce
+      
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=EcommerceStrongPwd
+    ports:
+      - "3000:3000"
+    networks:
+      - ecommerce
+
+  health-ui:
+    image: xabarilcoding/healthchecksui:latest
+    container_name: health-ui
+    ports:
+      - "8080:80" # Access at localhost:8080
+    environment:
+      - HealthChecksUI__HealthChecks__0__Name=Auth Service
+      - HealthChecksUI__HealthChecks__0__Uri=http://authservice:7000/health/ready
+      
+      - HealthChecksUI__HealthChecks__1__Name=Customer Service
+      - HealthChecksUI__HealthChecks__1__Uri=http://customerservice:7001/health/ready
+      
+      - HealthChecksUI__HealthChecks__2__Name=Product Service
+      - HealthChecksUI__HealthChecks__2__Uri=http://productservice:7002/health/ready
+
+      - HealthChecksUI__HealthChecks__3__Name=Cart Service
+      - HealthChecksUI__HealthChecks__3__Uri=http://cartservice:7003/health/ready
+
+      - HealthChecksUI__HealthChecks__4__Name=Order Service
+      - HealthChecksUI__HealthChecks__4__Uri=http://orderservice:7004/health/ready
+
+      - HealthChecksUI__HealthChecks__5__Name=Payment Service
+      - HealthChecksUI__HealthChecks__5__Uri=http://paymentservice:7005/health/ready
+
+      - HealthChecksUI__HealthChecks__6__Name=Cancellation Service
+      - HealthChecksUI__HealthChecks__6__Uri=http://cancellationservice:7006/health/ready
+
+      - HealthChecksUI__HealthChecks__7__Name=Feedback Service
+      - HealthChecksUI__HealthChecks__7__Uri=http://feedbackservice:7007/health/ready
+
+      - HealthChecksUI__HealthChecks__8__Name=API Gateway
+      - HealthChecksUI__HealthChecks__8__Uri=http://api-gateway:9000/health/ready
+      
+      # How often to poll (seconds)
+      - HealthChecksUI__EvaluationTimeInSeconds=5
+      - HealthChecksUI__MinimumSecondsBetweenFailureNotifications=60
+    networks:
+      - ecommerce
+
+volumes:
+  sqlserver_data:
+  redis-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+
+networks:
+  ecommerce:
+    driver: bridge

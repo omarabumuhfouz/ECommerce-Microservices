@@ -1,0 +1,36 @@
+﻿
+
+@await Component.InvokeAsync("Hero", new { 
+    title = "Summer Collection 2023", 
+    subtitle = "Discover the latest trends and get up to 40% off on selected items", 
+    buttonText = "Shop Now", 
+    buttonUrl = "#" 
+})
+
+
+
+
+    <!-- Main Content Area (Controller would handle this section) -->
+    <div class="container">
+        <div class="row">
+
+@await Component.InvokeAsync("SidebarFilters", new {
+    categories = new List<CategoryFilter> {
+        new() { Id = "cat1", Name = "Electronics", Checked = true },
+        new() { Id = "cat2", Name = "Clothing", Checked = false },
+        new() { Id = "cat3", Name = "Home & Garden", Checked = false },
+        new() { Id = "cat4", Name = "Sports", Checked = false }
+    },
+    minPrice = 0,
+    maxPrice = 1000,
+    selectedSort = "Recommended"
+})
+
+            @await Component.InvokeAsync("ProductListing")
+
+
+            
+
+
+        </div>
+    </div>

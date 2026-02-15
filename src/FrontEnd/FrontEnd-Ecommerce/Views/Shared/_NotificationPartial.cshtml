@@ -1,0 +1,101 @@
+<link rel="stylesheet" href="~/css/NotificationPartial.css" asp-append-version="true" />
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 3000;">
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-lg mb-2 custom-notification" role="alert" data-timeout-id="">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>@TempData["Success"]</strong>
+                </div>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="notification-progress"></div>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-lg mb-2 custom-notification" role="alert" data-timeout-id="">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>@TempData["Error"]</strong>
+                </div>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="notification-progress"></div>
+            </div>
+        }
+
+        @if (TempData["Info"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show shadow-lg mb-2 custom-notification" role="alert" data-timeout-id="">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>@TempData["Info"]</strong>
+                </div>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="notification-progress"></div>
+            </div>
+        }
+
+        @if (TempData["Warning"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show shadow-lg mb-2 custom-notification" role="alert" data-timeout-id="">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>@TempData["Warning"]</strong>
+                </div>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="notification-progress"></div>
+            </div>
+        }
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Select all custom notifications
+        const alerts = document.querySelectorAll('.custom-notification');
+
+        alerts.forEach(alert => {
+            // Auto dismiss after 5 seconds
+            const timeoutId = setTimeout(() => {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            }, 5000);
+            
+            // Store timeout ID on the alert element
+            alert.dataset.timeoutId = timeoutId;
+
+            // Add click event to close button to clear timeout
+            const closeButton = alert.querySelector('.custom-close');
+            closeButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                clearTimeout(timeoutId);
+                
+                // Also stop the progress bar animation
+                const progressBar = alert.querySelector('.notification-progress');
+                if (progressBar) {
+                    progressBar.style.animation = 'none';
+                }
+                
+                // Manually close the alert using Bootstrap
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            });
+
+            // Prevent the alert itself from being dismissible on click
+            alert.style.cursor = 'default';
+            
+            // Also clear timeout when Bootstrap closes the alert
+            alert.addEventListener('closed.bs.alert', function() {
+                if (alert.dataset.timeoutId) {
+                    clearTimeout(parseInt(alert.dataset.timeoutId));
+                }
+            });
+        });
+    });
+</script>

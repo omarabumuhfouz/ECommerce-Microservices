@@ -1,0 +1,67 @@
+{
+  "Categories": [
+    {
+      "Id": 1,
+      "Name": "Electronics",
+      "Description": "Devices and gadgets",
+      "IsActive": true,
+      "Products": [
+        {
+          "Id": 1,
+          "Name": "Smartphone",
+          "Description": "High-end smartphone",
+          "Price": 799.99,
+          "StockQuantity": 100,
+          "DiscountPercentage": 10,
+          "ImageUrl": "https://example.com/images/smartphone.jpg",
+          "IsAvailable": true,
+          "CategoryId": 1
+        },
+        {
+          "Id": 2,
+          "Name": "Headphones",
+          "Description": "Noise-cancelling headphones",
+          "Price": 199.50,
+          "StockQuantity": 0,
+          "DiscountPercentage": 0,
+          "ImageUrl": "https://example.com/images/headphones.jpg",
+          "IsAvailable": false,
+          "CategoryId": 1
+        }
+      ]
+    },
+    {
+      "Id": 2,
+      "Name": "Books",
+      "Description": "Printed and digital books",
+      "IsActive": true,
+      "Products": [
+        {
+          "Id": 3,
+          "Name": "C# in Depth",
+          "Description": "Programming book for .NET developers",
+          "Price": 49.99,
+          "StockQuantity": 20,
+          "DiscountPercentage": 5,
+          "ImageUrl": "image.tests.com",
+          "IsAvailable": true,
+          "CategoryId": 2
+        }
+      ]
+    },
+    {
+      "Id": 3,
+      "Name": "Clothing",
+      "Description": "Men and women clothing",
+      "IsActive": false,
+      "Products": []
+    },
+    {
+      "Id": 4,
+      "Name": "Empty Category",
+      "Description": "No products inside",
+      "IsActive": true,
+      "Products": []
+    }
+  ]
+}

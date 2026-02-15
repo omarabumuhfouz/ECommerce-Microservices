@@ -1,0 +1,92 @@
+@model FrontEnd_Ecommerce.Models.SidebarViewModel
+
+<!-- Sidebar -->
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h3>Admin Panel</h3>
+    </div>
+    
+    <ul class="list-unstyled components">
+        <li class="active">
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fas fa-tachometer-alt sidebar-icon"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="#ordersSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                <i class="fas fa-shopping-cart sidebar-icon"></i>
+                <span>Orders</span>
+            </a>
+            <ul class="collapse list-unstyled" id="ordersSubmenu">
+                <li>
+                    <a asp-controller="Orders" asp-action="Index"><i class="fas fa-list sidebar-icon"></i> All Orders</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-plus sidebar-icon"></i> New Orders</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-truck sidebar-icon"></i> Shipped Orders</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-ban sidebar-icon"></i> Cancellations Orders</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a asp-controller="Payments" asp-action="Index">
+                <i class="fas fa-money-bill-wave sidebar-icon"></i>
+                <span>Payments</span>
+            </a>
+        </li>
+        <li>
+            <a asp-controller="Cancellations" asp-action="Index">
+                <i class="fas fa-ban sidebar-icon"></i>
+                <span>Cancellations</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-comments sidebar-icon"></i>
+                <span>Feedbacks</span>
+                <span class="notification-badge">@Model.NotificationsCount</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-undo-alt sidebar-icon"></i>
+                <span>Refunds</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" data-section="products">
+                <i class="fas fa-box sidebar-icon"></i>
+                <span>Products</span>
+            </a>
+        </li>
+        <li>
+            <a asp-controller="Customers" asp-action="Index" data-section="customers">
+                <i class="fas fa-users sidebar-icon"></i>
+                <span>Customers</span>
+            </a>
+        </li>
+        <li>
+            <a asp-controller="Reports" asp-action="Index">
+                <i class="fas fa-chart-bar sidebar-icon"></i>
+                <span>Reports</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-cog sidebar-icon"></i>
+                <span>Settings</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-sign-out-alt sidebar-icon"></i>
+                <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+</div>

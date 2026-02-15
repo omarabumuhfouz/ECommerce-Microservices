@@ -1,0 +1,11 @@
+global using SharedKernel.Abstractions.Messaging;
+global using CancellationService.Application.Cancellations.DTOs;
+global using SharedKernel.Shared;
+global using FluentValidation;
+global using SharedKernel.Abstractions;
+global using MediatR;
+global using CancellationService.Domain.Cancellations;
+global using CancellationService.Domain.Errors;
+global using CancellationService.Application.Common.Extensions;
+global using SharedKernel.Abstractions.Data;
+global using SharedKernel.Common;

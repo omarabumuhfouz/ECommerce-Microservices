@@ -1,0 +1,112 @@
+<
+ <link rel="stylesheet" href="~/css/AdminProfile.css" />
+   
+
+
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <button class="back-button" onclick="goToDashboard()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-info">
+                <h2>John Doe</h2>
+                <p>Super Administrator</p>
+                <p><i class="fas fa-envelope"></i> john.doe@example.com | <i class="fas fa-map-marker-alt"></i> New York, USA</p>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">142</div>
+                        <div class="profile-stat-label">Tasks</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">24</div>
+                        <div class="profile-stat-label">Projects</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">89%</div>
+                        <div class="profile-stat-label">Efficiency</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- Success Message -->
+            <div class="alert alert-success" id="successMessage" style="display: none;">
+                <i class="fas fa-check-circle"></i> Profile updated successfully!
+            </div>
+
+            <form class="profile-form" id="adminProfileForm">
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <h3>Basic Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="Username">Username</label>
+                            <input type="text" id="Username" class="form-control" value="admin.john" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="Email">Email Address</label>
+                            <input type="email" id="Email" class="form-control" value="john.doe@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="FirstName">First Name</label>
+                            <input type="text" id="FirstName" class="form-control" value="John">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="LastName">Last Name</label>
+                            <input type="text" id="LastName" class="form-control" value="Doe">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="PhoneNumber">Phone Number</label>
+                            <input type="tel" id="PhoneNumber" class="form-control" value="+1 (555) 123-4567">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="Role">Role</label>
+                            <input type="text" id="Role" class="form-control" value="Super Admin" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="Department">Department</label>
+                            <select id="Department" class="form-control">
+                                <option>IT & Security</option>
+                                <option>Marketing</option>
+                                <option>Sales</option>
+                                <option>Operations</option>
+                                <option>Human Resources</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="Status">Status</label>
+                            <input type="text" id="Status" class="form-control" value="Active" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="goToDashboard()">Back to Dashboard</button>
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    

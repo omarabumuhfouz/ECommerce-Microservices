@@ -1,0 +1,58 @@
+@{
+    @* Layout = ViewData["Layout"]?.ToString();  You Can Using View Data for futuer*@ 
+
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+</head>
+<body>
+
+
+
+        <!-- Content -->
+        <div id="content">
+
+          @await Component.InvokeAsync("AdminNavbar")
+
+  
+
+            <!-- Page Content -->
+            <div class="container-fluid">
+
+
+        @await Component.InvokeAsync("AdminStats")
+
+
+
+                <!-- Charts Row -->
+                <div class="row mb-4">
+
+        @await Component.InvokeAsync("RevenueChart")
+
+      @await Component.InvokeAsync("OrderStatus")
+
+
+                @await Component.InvokeAsync("RecentOrders")
+@await Component.InvokeAsync("RecentFeedback")
+
+
+
+            </div>
+        </div>
+    </div>
+
+@* @section Scripts {
+    <script>
+        initializeOrderStatusChart("orderStatusChart");
+    </script>
+} *@
+
+
+   </body>
+</html>

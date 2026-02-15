@@ -1,0 +1,146 @@
+{
+  "Carts": [
+    {
+      "Id": 1,
+      "CustomerId": 1001,
+      "IsCheckedOut": false,
+      "CreatedAt": "2025-07-08T00:00:00Z",
+      "UpdatedAt": "2025-07-08T00:00:00Z",
+      "CartItems": []
+    },
+    {
+      "Id": 2,
+      "CustomerId": 1002,
+      "IsCheckedOut": false,
+      "CreatedAt": "2025-07-07T12:00:00Z",
+      "UpdatedAt": "2025-07-07T12:00:00Z",
+      "CartItems": [
+        {
+          "Id": 201,
+          "ProductId": 10,
+          "Quantity": 1,
+          "UnitPrice": 100,
+          "Discount": 10,
+          "TotalPrice": 90,
+          "CreatedAt": "2025-07-07T12:00:00Z",
+          "UpdatedAt": "2025-07-07T12:00:00Z"
+        }
+      ]
+    },
+    {
+      "Id": 3,
+      "CustomerId": 1003,
+      "IsCheckedOut": false,
+      "CreatedAt": "2025-07-06T10:00:00Z",
+      "UpdatedAt": "2025-07-06T10:00:00Z",
+      "CartItems": [
+        {
+          "Id": 301,
+          "ProductId": 11,
+          "Quantity": 2,
+          "UnitPrice": 50,
+          "Discount": 5,
+          "TotalPrice": 90,
+          "CreatedAt": "2025-07-06T10:00:00Z",
+          "UpdatedAt": "2025-07-06T10:00:00Z"
+        },
+        {
+          "Id": 302,
+          "ProductId": 12,
+          "Quantity": 3,
+          "UnitPrice": 20,
+          "Discount": 0,
+          "TotalPrice": 60,
+          "CreatedAt": "2025-07-06T10:00:00Z",
+          "UpdatedAt": "2025-07-06T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "Id": 4,
+      "CustomerId": 1004,
+      "IsCheckedOut": true,
+      "CreatedAt": "2025-07-05T14:30:00Z",
+      "UpdatedAt": "2025-07-06T16:00:00Z",
+      "CartItems": [
+        {
+          "Id": 401,
+          "ProductId": 13,
+          "Quantity": 1,
+          "UnitPrice": 200,
+          "Discount": 50,
+          "TotalPrice": 150,
+          "CreatedAt": "2025-07-05T14:30:00Z",
+          "UpdatedAt": "2025-07-06T16:00:00Z"
+        }
+      ]
+    },
+    {
+      "Id": 5,
+      "CustomerId": 1005,
+      "IsCheckedOut": false,
+      "CreatedAt": "2025-07-01T09:00:00Z",
+      "UpdatedAt": "2025-07-01T09:00:00Z",
+      "CartItems": [
+        {
+          "Id": 501,
+          "ProductId": 14,
+          "Quantity": 0,
+          "UnitPrice": 99,
+          "Discount": 5,
+          "TotalPrice": 0,
+          "CreatedAt": "2025-07-01T09:00:00Z",
+          "UpdatedAt": "2025-07-01T09:00:00Z"
+        }
+      ]
+    },
+    {
+      "Id": 6,
+      "CustomerId": 1006,
+      "IsCheckedOut": false,
+      "CreatedAt": "2025-07-01T10:00:00Z",
+      "UpdatedAt": "2025-07-01T10:00:00Z",
+      "CartItems": [
+        {
+          "Id": 601,
+          "ProductId": 15,
+          "Quantity": 2,
+          "UnitPrice": 100,
+          "Discount": 100,
+          "TotalPrice": 0,
+          "CreatedAt": "2025-07-01T10:00:00Z",
+          "UpdatedAt": "2025-07-01T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "Id": 7,
+      "CustomerId": 1007,
+      "IsCheckedOut": false,
+      "CreatedAt": "2025-07-03T08:00:00Z",
+      "UpdatedAt": "2025-07-03T08:00:00Z",
+      "CartItems": [
+        {
+          "Id": 701,
+          "ProductId": 16,
+          "Quantity": 1,
+          "UnitPrice": 100,
+          "Discount": 20,
+          "TotalPrice": 80,
+          "CreatedAt": "2025-07-03T08:00:00Z",
+          "UpdatedAt": "2025-07-03T08:00:00Z"
+        },
+        {
+          "Id": 702,
+          "ProductId": 16,
+          "Quantity": 2,
+          "UnitPrice": 100,
+          "Discount": 10,
+          "TotalPrice": 180,
+          "CreatedAt": "2025-07-03T08:01:00Z",
+          "UpdatedAt": "2025-07-03T08:01:00Z"
+        }
+      ]
+    }
+  ]
+}

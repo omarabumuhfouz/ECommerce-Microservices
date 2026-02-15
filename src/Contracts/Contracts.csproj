@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.33.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.71.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.71.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.76.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <!-- Common models - used by multiple services -->
+    <Protobuf Include="Protos\*.proto" GrpcServices="None" Access="Public" />
+    
+    <!-- Customer service -->
+    <Protobuf Include="Protos\customer.proto" GrpcServices="Both" Access="Public" />
+
+    <!-- Prouct Service -->
+    <Protobuf Include="Protos\product.proto" GrpcServices="Both" />
+    
+    <!-- Order service -->
+    <Protobuf Include="Protos\order.proto" GrpcServices="Both" />
+
+    <Protobuf Include="Protos\user.proto" GrpcServices="Both" />
+
+    <Protobuf Include="Protos\cart.proto" GrpcServices="Both" />
+  </ItemGroup>
+
+
+</Project>
