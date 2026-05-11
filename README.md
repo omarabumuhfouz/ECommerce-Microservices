@@ -89,9 +89,10 @@ The source of truth for user identities and profiles.
 
 The system implements a modern observability stack to monitor distributed health:
 
-*   **Structured Logging (Serilog & Seq):** All services use Serilog for structured logging, providing deep insights into application behavior. Logs are centralized and visualized via the **Seq UI**.
-*   **Distributed Tracing (OpenTelemetry & Grafana):** Basic OpenTelemetry setup is implemented across services. Traces and metrics are visualized in **Grafana**, allowing for request tracking across gRPC and RabbitMQ boundaries.
-*   **Health Checks (`/health`):** Every service exposes liveness and readiness endpoints, monitoring the status of **SQL Server** and **RabbitMQ** connections.
+* **Structured Logging (Serilog & Seq):** Centralized log visualization for deep system insights via Seq UI.
+* **Distributed Tracing (OpenTelemetry & Grafana):** Request tracking across gRPC and RabbitMQ boundaries.
+* **Health Checks (`/health`):** Real-time monitoring of service liveness and database/broker readiness.
+* **Transactional Outbox:** Guarantees 100% reliable message delivery for distributed events.
 ---
 
 ## 🔄 Functional Flow Example (ROP)
@@ -106,7 +107,7 @@ public async Task<Result<Guid>> Handle(CreateProductCommand command)
         .Bind(cmd => MapToDomainEntity(cmd))
         .Bind(entity => SaveToDatabaseWithOutboxAsync(entity));
 }
-
+```
 
 ---
 
