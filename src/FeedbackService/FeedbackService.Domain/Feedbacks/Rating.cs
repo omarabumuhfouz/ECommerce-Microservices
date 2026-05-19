@@ -1,5 +1,4 @@
 ﻿using FeedbackService.Domain.Errors;
-using SharedKernel.Shared;
 
 namespace FeedbackService.Domain.Feedbacks;
 

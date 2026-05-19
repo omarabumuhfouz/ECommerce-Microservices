@@ -1,5 +1,3 @@
-using SharedKernel.Shared;
-
 namespace FeedbackService.Domain.Errors;
 
 public static class DomainErrors
