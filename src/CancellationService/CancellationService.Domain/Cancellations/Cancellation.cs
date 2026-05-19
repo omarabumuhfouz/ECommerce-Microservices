@@ -1,14 +1,13 @@
 ﻿using CancellationService.Domain.Cancellations.Enums;
 using CancellationService.Domain.ValueObjects;
 using CancellationService.Domain.Errors;
-using SharedKernel.Shared;
-using SharedKernel.Primitives.Result;
 using CancellationService.Domain.Cancellations.Events;
 using MediatR;
+using SharedKernel.Primitives.Results;
 
 namespace CancellationService.Domain.Cancellations;
 
-public record Cancellation : AggregateRoot
+public class Cancellation : AggregateRoot
 {
     private Cancellation()
     {

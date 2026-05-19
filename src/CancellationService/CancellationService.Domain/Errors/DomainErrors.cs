@@ -1,5 +1,3 @@
-using SharedKernel.Primitives.Results;
-
 namespace CancellationService.Domain.Errors;
 
 public static class DomainErrors
