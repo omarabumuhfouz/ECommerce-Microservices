@@ -1,11 +1,9 @@
 ﻿using FeedbackService.Domain.Errors;
 using MediatR;
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared;
 
 namespace FeedbackService.Domain.Feedbacks;
 
-public record Feedback : AggregateRoot
+public class Feedback : AggregateRoot
 {
     private Feedback() { }
     private Feedback(

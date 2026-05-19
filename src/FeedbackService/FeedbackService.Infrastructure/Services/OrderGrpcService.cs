@@ -1,6 +1,6 @@
 using Contracts.Order;
 using FeedbackService.Domain.Errors;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 public class OrderGrpcService : IOrderService
 {
