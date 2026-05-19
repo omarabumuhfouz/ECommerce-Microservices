@@ -1,9 +1,10 @@
 using AuthService.Domain.Extensions;
 using AuthService.Domain.RefreshTokens;
+using SharedKernel.Primitives.Results;
 
 namespace AuthService.Domain.Clients; 
 
-public record Client : AggregateRoot
+public class Client : AggregateRoot
 {
     public string ClientId { get; private set; }
     public string Name { get; private set; }

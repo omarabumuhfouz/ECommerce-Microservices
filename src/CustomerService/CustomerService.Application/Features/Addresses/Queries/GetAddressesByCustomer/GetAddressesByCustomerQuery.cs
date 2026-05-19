@@ -1,6 +1,6 @@
 ﻿using CustomerService.Application.Addresses.DTOs;
 
-namespace CustomerService.Application.Addresses.Queries.GetAddressesByCustomer;
+namespace CustomerService.Application.Features.Addresses.Queries.GetAddressesByCustomer;
 
 public record GetAddressesByCustomerQuery(Guid CustomerId)
         : ICachedQuery<List<AddressDto>>

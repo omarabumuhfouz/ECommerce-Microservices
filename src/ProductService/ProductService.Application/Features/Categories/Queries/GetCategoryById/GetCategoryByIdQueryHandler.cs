@@ -17,11 +17,12 @@ public class GetCategoryByIdQueryHandler : IQueryHandler<GetCategoryByIdQuery, C
 
     async Task<Result<CategoryDto>> IRequestHandler<GetCategoryByIdQuery, Result<CategoryDto>>.Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        var categoryRepo = _unitOfWork.GetRepository<Category>();
-        var category = await categoryRepo.GetSingleBySpecAsync(new GetCategoryByIdSpec(request.CategoryId));
+        return await _unitOfWork.GetRepository<Category>()
 
-        if (category is null) return DomainErrors.Category.NotFound(request.CategoryId);
+        .FirstOrDefaultAsync(new GetCategoryByIdSpec(request.CategoryId))
 
-        return _mapper.Map<CategoryDto>(category);
+        .ToResult(DomainErrors.Category.NotFound(request.CategoryId))
+
+        .Map(category => _mapper.Map<CategoryDto>(category));
     }
 }

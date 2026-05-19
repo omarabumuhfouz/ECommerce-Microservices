@@ -1,4 +1,8 @@
-﻿namespace CustomerService.Application.Addresses.Commands.CreateAddress;
+﻿using CustomerService.Application.Features.Specifications.Customers;
+using CustomerService.Domain.Customers;
+using SharedKernel.Common;
+
+namespace CustomerService.Application.Features.Addresses.Commands.CreateAddress;
 
 public class CreateAddressCommandHandler : ICommandHandler<CreateAddressCommand, Guid>
 {
@@ -19,27 +23,31 @@ public class CreateAddressCommandHandler : ICommandHandler<CreateAddressCommand,
     }
 
 
-    async Task<Result<Guid>> IRequestHandler<CreateAddressCommand, Result<Guid>>.Handle(CreateAddressCommand request, CancellationToken cancellationToken)
+    async Task<Result<Guid>> IRequestHandler<CreateAddressCommand, Result<Guid>>.Handle(
+    CreateAddressCommand request,
+    CancellationToken ct)
     {
-        _logger.LogInformation("Creating Address Start with CustomerId : {@CustomerId}", request.CustomerId);
+        _logger.LogInformation("Creating Address for CustomerId: {CustomerId}", request.CustomerId);
 
         var customerRepository = _unitOfWork.GetRepository<Customer>();
-        var customer = await customerRepository.GetSingleBySpecAsync(new GetCustomerByIdSpec(request.CustomerId, true), cancellationToken);
 
-        if (customer is null)
-        {
-            _logger.LogWarning("Customer not found with Id : {@CustomerId}", request.CustomerId);
-            return DomainErrors.Customer.NotFound(request.CustomerId);
-        }
+        return await customerRepository
+            .FirstOrDefaultAsync(new GetCustomerByIdSpec(request.CustomerId, true), ct)
+            .ToResult(DomainErrors.Customer.NotFound(request.CustomerId))
 
-        var address = _mapper.Map<Address>(request);
-        var result = customer.AddAddress(address);
+            .TapError(error => _logger.LogWarning("Create Address failed: {Error}", error.Message))
 
-        if (result.IsFailure) return result.TopError;
+            .Bind(customer =>
+            {
+                var address = _mapper.Map<Address>(request);
+                return customer.AddAddress(address).Map(_ => (customer, address));
+            })
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+            .Tap(async x => await _unitOfWork.SaveChangesAsync(ct))
 
-        _logger.LogInformation("Address Created Successfully with Id {@AddressId}", address.Id);
-        return address.Id;
+            .Tap(x => _logger.LogInformation("Address {AddressId} created for Customer {CustomerId}",
+                x.address.Id, x.customer.Id))
+
+            .Map(x => x.address.Id);
     }
 }

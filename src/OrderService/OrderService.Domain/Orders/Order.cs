@@ -1,14 +1,14 @@
-﻿using SharedKernel.Primitives.Result;
-using OrderService.Domain.Orders.Enums;
+﻿using OrderService.Domain.Orders.Enums;
 using OrderService.Domain.Orders.ValueObjects;
 using MediatR;
 using OrderService.Domain.Constants;
 using SharedKernel.Common;
 using OrderService.Domain.Orders.Events;
+using SharedKernel.Primitives.Results;
 
 namespace OrderService.Domain.Orders;
 
-public record Order : AggregateRoot,IAuditableEntity
+public class Order : AggregateRoot,IAuditableEntity
 {
     private Order(
         Guid id,

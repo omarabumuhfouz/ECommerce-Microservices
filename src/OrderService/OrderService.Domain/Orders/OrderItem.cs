@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using OrderService.Domain.Constants;
 using OrderService.Domain.Orders.ValueObjects;
+using SharedKernel.Primitives.Results;
 
 
 namespace OrderService.Domain.Orders;
 
-public record OrderItem : Entity
+public class OrderItem : Entity
 {
     private OrderItem(
         Guid id,

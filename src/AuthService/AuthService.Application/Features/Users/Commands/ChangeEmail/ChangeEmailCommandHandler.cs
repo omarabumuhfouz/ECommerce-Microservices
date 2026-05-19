@@ -19,7 +19,7 @@ public class ChangeEmailCommandHandler : ICommandHandler<ChangeEmailCommand, Uni
 
         var userRepo = _unitOfWork.GetRepository<User>();
 
-        var user = await userRepo.GetSingleBySpecAsync(new GetUserByIdSpec(command.UserId), cancellationToken);
+        var user = await userRepo.FirstOrDefaultAsync(new GetUserByIdSpec(command.UserId), cancellationToken);
 
         if (user is null)
         {

@@ -1,4 +1,4 @@
-namespace CustomerService.Application.Customers.Queries;
+namespace CustomerService.Application.Features.Customers.Queries.IsCustomerExistsById;
 
 public record IsCustomerExistsByIdQuery(Guid CustomerId) :
     ICachedQuery<Unit>

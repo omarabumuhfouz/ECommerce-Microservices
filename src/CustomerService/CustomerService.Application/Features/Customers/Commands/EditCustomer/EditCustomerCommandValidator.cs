@@ -1,4 +1,4 @@
-﻿namespace CustomerService.Application.Customers.Commands.EditCustomer;
+﻿namespace CustomerService.Application.Features.Customers.Commands.EditCustomer;
 
 public class EditCustomerCommandValidator : AbstractValidator<EditCustomerCommand>
 {

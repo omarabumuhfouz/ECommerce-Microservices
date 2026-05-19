@@ -4,14 +4,13 @@ using ProductService.Api.Contracts.Category;
 using ProductService.Application.Features.Categories.Commands.CreateCategory;
 using ProductService.Application.Features.Categories.Commands.DeleteCategory;
 using ProductService.Application.Features.Categories.Commands.EditCategory;
-using ProductService.Application.Features.Categories.Commands.SetCategoryAsActive;
+using ProductService.Application.Features.Categories.Commands.RestoreCategory;
 using ProductService.Application.Features.Categories.DTOs;
 using ProductService.Application.Features.Categories.Queries.GetCategories;
 using ProductService.Application.Features.Categories.Queries.GetCategoryById;
 using ProductService.Application.Features.Categories.Queries.GetProductsByGategory;
 using ProductService.Application.Features.Products.DTOs;
 using SharedKernel.Extensions;
-using SharedKernel.Constants; 
 
 namespace ProductService.Api.Endpoints;
 
@@ -44,14 +43,7 @@ public static class CategoriesEndpoints
             .WithSummary("Edit an existing category")
             .WithName("EditCategory");
 
-        categoriesApi.MapPut("/{categoryId:Guid}/set-active", SetCategoryAsActive)
-            // .RequireAuthorization(AuthConstants.Policies.AdminOnly)
-            .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithSummary("Set a category as active")
-            .WithName("SetCategoryAsActive");
-
+        
         categoriesApi.MapDelete("/{categoryId:Guid}", DeleteCategory)
             // .RequireAuthorization(AuthConstants.Policies.AdminOnly) 
             .Produces(StatusCodes.Status204NoContent)
@@ -60,6 +52,14 @@ public static class CategoriesEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .WithSummary("Delete a category")
             .WithName("DeleteCategory");
+
+        categoriesApi.MapPut("/{categoryId:Guid}", RestoreCategory)
+            // .RequireAuthorization(AuthConstants.Policies.AdminOnly) 
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .WithSummary("Restore Deleted  category")
+            .WithName("RestoreCategory");
 
         
         categoriesApi.MapGet("/{categoryId:Guid}", GetCategoryById)
@@ -97,15 +97,17 @@ public static class CategoriesEndpoints
         return result.Match(_ => Results.NoContent(), e => e.ToProblem());
     }
 
-    private static async Task<IResult> SetCategoryAsActive([FromRoute] Guid categoryId, [FromServices] ISender sender)
-    {
-        var result = await sender.Send(new SetCategoryAsActiveCommand(categoryId));
-        return result.Match(_ => Results.NoContent(), e => e.ToProblem());
-    }
+
 
     private static async Task<IResult> DeleteCategory([FromRoute] Guid categoryId, [FromServices] ISender sender)
     {
         var result = await sender.Send(new DeleteCategoryCommand(categoryId));
+        return result.Match(_ => Results.NoContent(), e => e.ToProblem());
+    }
+
+    private static async Task<IResult> RestoreCategory([FromRoute] Guid categoryId, [FromServices] ISender sender)
+    {
+        var result = await sender.Send(new RestoreCategoryCommand(categoryId));
         return result.Match(_ => Results.NoContent(), e => e.ToProblem());
     }
 

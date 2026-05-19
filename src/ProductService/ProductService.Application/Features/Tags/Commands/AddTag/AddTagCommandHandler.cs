@@ -1,4 +1,4 @@
-using ProductService.Domain.TagManagement;
+using ProductService.Domain.Tags;
 
 namespace ProductService.Application.Features.Tags.Commands.AddTag;
 
@@ -16,22 +16,26 @@ public class AddTagCommandHandler : ICommandHandler<AddTagCommand, Guid>
         _logger = logger;
     }
 
-    async Task<Result<Guid>> IRequestHandler<AddTagCommand, Result<Guid>>.Handle(AddTagCommand request, CancellationToken cancellationToken)
+    async Task<Result<Guid>> IRequestHandler<AddTagCommand, Result<Guid>>.Handle(AddTagCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Starting Adding Tag with name : {@TagName}", request.Name);
 
         var tagRepo = _unitOfWork.GetRepository<Tag>();
 
-        var tagResult = Tag.Create(request.Name);
-        if (tagResult.IsFailure) return tagResult.TopError;
+        return Tag.Create(request.Name)
 
-        await tagRepo.AddAsync(tagResult.Value, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        .Tap(async tag => await tagRepo.AddAsync(tag, ct))
 
-        _logger.LogInformation("Add Tag Successfully with Id : {@TagId} and name : {@TagName}",
-            tagResult.Value.Id,
-            tagResult.Value.Name);
+        .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
 
-        return tagResult.Value.Id;
+        .Tap(tag => _logger.LogInformation(
+                "Add Tag Successfully with Id : {@TagId} and name : {@TagName}",
+                tag.Id, tag.Name))
+
+        .TapError(error => _logger.LogError(
+                "Failed to create Tag '{TagName}'. Error Code: {ErrorCode}, Message: {ErrorMessage}",
+                request.Name, error.Code, error.Message))
+
+        .Map(tag => tag.Id);
     }
 }

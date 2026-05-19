@@ -1,3 +1,5 @@
+using CustomerService.Application.Features.Addresses.Commands.SetDefaultAddress;
+
 namespace CustomerService.Application.Addresses.Commands.SetDefaultAddress;
 
 public class SetDefaultAddressCommandValidator : AbstractValidator<SetDefaultAddressCommand>

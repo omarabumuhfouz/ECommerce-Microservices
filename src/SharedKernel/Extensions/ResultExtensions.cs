@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 public static class ResultExtensions
 {
@@ -345,7 +345,7 @@ public static class ResultExtensions
             : Result.Failure<T>(errorFactory(result.Value));
     }
 
-// 1. Ensure for non-generic Result
+    // 1. Ensure for non-generic Result
     public static Result Ensure(this Result result, Func<Unit, bool> predicate, Error error)
     {
         if (result.IsFailure) return result;
@@ -385,18 +385,144 @@ public static class ResultExtensions
         return result;
     }
 
-public static async Task<Result<T>> Ensure<T>(
-    this Task<Result<T>> resultTask,
-    Func<T, Task<Result>> predicate) // 👈 This handles the async check
-{
-    var result = await resultTask;
+    public static async Task<Result<T>> Ensure<T>(
+        this Task<Result<T>> resultTask,
+        Func<T, Task<Result>> predicate) // 👈 This handles the async check
+    {
+        var result = await resultTask;
 
-    if (result.IsFailure) return result;
+        if (result.IsFailure) return result;
 
-    var ensureResult = await predicate(result.Value);
-    
-    return ensureResult.IsFailure ? Result.Failure<T>(ensureResult.TopError) : result;
-}
+        var ensureResult = await predicate(result.Value);
+
+        return ensureResult.IsFailure ? Result.Failure<T>(ensureResult.TopError) : result;
+    }
+
+    public static async Task<Result<T>> Ensure<T>(
+            this Result<T> result,
+            Func<Task<bool>> predicate,
+            Error error)
+    {
+        // If the railway is already on the 'Failure' track, just pass it through
+        if (result.IsFailure)
+            return result;
+
+        // Await the async check
+        bool isSuccess = await predicate();
+
+        // If the check fails, switch to the 'Failure' track
+        return isSuccess ? result : Result.Failure<T>(error);
+
+    }
+
+    // This handles Task<Result<T>> -> (Async check with no params) -> Task<Result<T>>
+    public static async Task<Result<T>> Ensure<T>(
+        this Task<Result<T>> resultTask,
+        Func<Task<bool>> predicate,
+        Error error)
+    {
+        var result = await resultTask;
+
+        if (result.IsFailure) return result;
+
+        if (!await predicate())
+            return Result.Failure<T>(error);
+
+        return result;
+    }
+
+    public static async Task<Result> Ensure(
+        this Result result,
+        Func<Task<bool>> predicate,
+        Error error)
+    {
+        if (result.IsFailure) return result;
+
+        if (!await predicate())
+            return Result.Failure(error);
+
+        return Result.Success();
+    }
+
+    // For non-generic Task<Result>
+    public static async Task<Result> TapError(
+        this Task<Result> resultTask,
+        Action<Error> action)
+    {
+        var result = await resultTask;
+
+        if (result.IsFailure)
+        {
+            action(result.TopError);
+        }
+
+        return result;
+    }
+
+    // Converts Task<Result> (non-generic) to Task<Result<TNext>> (generic)
+    public static async Task<Result<TNext>> Map<TNext>(
+        this Task<Result> resultTask,
+        Func<Unit, TNext> func)
+    {
+        var result = await resultTask;
+
+        if (result.IsFailure)
+        {
+            return Result.Failure<TNext>(result.TopError);
+        }
+
+        // Using Unit.Value because the input was a non-generic Result
+        return Result.Success(func(Unit.Value));
+    }
+
+
+    // Special version for when the next step returns a non-generic Result
+    public static async Task<Result> Bind<T>(
+        this Task<Result<T>> resultTask,
+        Func<T, Result> func)
+    {
+        var result = await resultTask;
+
+        if (result.IsFailure)
+        {
+            return Result.Failure(result.TopError);
+        }
+
+        return func(result.Value);
+    }
+
+    // 1. For Async Side-effects (e.g., .Tap(async () => await _unitOfWork.SaveChangesAsync()))
+    public static async Task<Result> Tap(
+        this Task<Result> resultTask,
+        Func<Task> func)
+    {
+        var result = await resultTask;
+
+        if (result.IsSuccess)
+        {
+            await func();
+        }
+
+        return result;
+    }
+
+    // 2. For Sync Side-effects (e.g., .Tap(() => _logger.LogInformation(...)))
+    public static async Task<Result> Tap(
+        this Task<Result> resultTask,
+        Action action)
+    {
+        var result = await resultTask;
+
+        if (result.IsSuccess)
+        {
+            action();
+        }
+
+        return result;
+    }
+
+
+
 
 
 }

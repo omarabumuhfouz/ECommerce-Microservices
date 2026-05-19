@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Specifications;
 
 public class GetProductsByIdsSpec : Specification<Product>

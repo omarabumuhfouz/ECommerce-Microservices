@@ -18,7 +18,7 @@ public class ChangeRoleCommandHandler : ICommandHandler<ChangeRoleCommand, Unit>
         _logger.LogInformation("Attempting to change roles for user {UserId}", request.UserId);
 
         var userRepo = _unitOfWork.GetRepository<User>();
-        var user = await userRepo.GetSingleBySpecAsync(new GetUserByIdSpec(request.UserId), ct);
+        var user = await userRepo.FirstOrDefaultAsync(new GetUserByIdSpec(request.UserId), ct);
         if (user is null)
         {
             _logger.LogWarning("User with Id {UserId} not found", request.UserId);

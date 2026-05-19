@@ -6,12 +6,13 @@ public static class ErrorCodes
     {
         public const string NotFound = "Product.NotFound";
         public const string MissingIds = "Product.MissingIds";
-        public const string NameRequired = "Product.NameRequired";
+        public const string EmptyName = "Product.NameRequired";
         public const string DescriptionRequired = "Product.DescriptionRequired";
         public const string QuantityMustBePositive = "Product.QuantityMustBePositive"; 
-        public const string InsufficientStock = "Product.InsufficientStock";
         public const string DuplicateName = "Product.DuplicateName";
-        public const string InvalidStockOperation = "Product.InvalidStockOperation";
+        public const string InvalidPrice = "Product.InvalidPrice";
+
+
 
         public const string IdRequired = "Product.IdRequired";
         public const string NameLength = "Product.NameLength";

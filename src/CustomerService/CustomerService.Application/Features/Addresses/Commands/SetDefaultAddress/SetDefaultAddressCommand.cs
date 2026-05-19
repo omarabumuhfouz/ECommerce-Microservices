@@ -1,4 +1,4 @@
-namespace CustomerService.Application.Addresses.Commands.SetDefaultAddress;
+namespace CustomerService.Application.Features.Addresses.Commands.SetDefaultAddress;
 
 public sealed record SetDefaultAddressCommand(Guid CustomerId, Guid AddressId)
     : ICommand<Unit>, IInvalidateCache

@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.ImagesManagement.ReplaceMainImage;
 
 public class ReplaceMainImageCommandHandler : ICommandHandler<ReplaceMainImageCommand, Unit>

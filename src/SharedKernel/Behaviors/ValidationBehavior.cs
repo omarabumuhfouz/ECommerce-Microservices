@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 using System.Reflection; // Required for BindingFlags
 
 namespace SharedKernel.Behaviors;

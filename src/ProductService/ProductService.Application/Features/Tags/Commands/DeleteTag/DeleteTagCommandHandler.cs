@@ -1,5 +1,5 @@
-using ProductService.Domain.TagManagement;
-using ProductService.Domain.TagManagement.Specifications;
+using ProductService.Application.Features.Tags.Specifications;
+using ProductService.Domain.Tags;
 
 namespace ProductService.Application.Features.Tags.Commands.DeleteTag;
 
@@ -17,28 +17,29 @@ public class DeleteTagCommandHandler : ICommandHandler<DeleteTagCommand, Unit>
         _logger = logger;
     }
 
-    async Task<Result<Unit>> IRequestHandler<DeleteTagCommand, Result<Unit>>.Handle(DeleteTagCommand request, CancellationToken cancellationToken)
+    async Task<Result<Unit>> IRequestHandler<DeleteTagCommand, Result<Unit>>.Handle(DeleteTagCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Starting Deleting Tag with Id : {@TagId}", request.TagId);
 
-        var tagRepo = _unitOfWork.GetRepository<Tag>();
-        var productRepo = _unitOfWork.GetRepository<Product>();
+        return await _unitOfWork.GetRepository<Tag>()
 
-        var tag = await tagRepo.GetSingleBySpecAsync(new GetTagByIdSpec(request.TagId), cancellationToken);
-        if (tag == null) return DomainErrors.Tag.NotFound(request.TagId);
+        .FirstOrDefaultAsync(new GetTagByIdSpec(request.TagId), ct)
 
-        if (await productRepo.IsExistsAsync(p => p.Tags.Any(t => t.Id == request.TagId), cancellationToken))
-            return DomainErrors.Tag.HasAssociatedProducts;
+        .ToResult(DomainErrors.Tag.NotFound(request.TagId))
 
-        tagRepo.Delete(tag);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        .Bind(tag => tag.Delete().Map(() => tag))
 
-        _logger.LogInformation(
-            "Tag deleted successfully. TagId: {TagId}, TagName: {TagName}",
-            tag.Id,
-            tag.Name);
+        .Tap(async _ => { await _unitOfWork.SaveChangesAsync(ct); })
 
-        return Unit.Value;
+        .Tap(tag => _logger.LogInformation(
+            "Tag '{TagName}' with Id: {TagId} was successfully deleted.",
+            tag.Name, tag.Id))
+
+        .TapError(error => _logger.LogError(
+            "Failed to delete Tag with Id: {TagId}. Error Code: {ErrorCode}, Message: {ErrorMessage}",
+            request.TagId, error.Code, error.Message))
+
+        .Map(_ => Unit.Value);
     }
 
 }

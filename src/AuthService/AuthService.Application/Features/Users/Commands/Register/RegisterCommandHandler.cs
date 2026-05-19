@@ -101,7 +101,7 @@ public class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegisterR
         // Check 1: Client Application Exists
         // Uses the Public ID Specification (String -> Guid resolution)
         var client = await _unitOfWork.GetRepository<Client>()
-                                      .GetSingleBySpecAsync(new GetClientByPublicIdSpec(clientId), ct);
+                                      .FirstOrDefaultAsync(new GetClientByPublicIdSpec(clientId), ct);
 
         if (client is null)
         {
@@ -111,7 +111,7 @@ public class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegisterR
 
         // Check 2: User Email Uniqueness
         var isEmailExists = await _unitOfWork.GetRepository<User>()
-                                             .IsExistsBySpecAsync(new GetUserByEmailSpec(email), ct);
+                                             .AnyAsync(new GetUserByEmailSpec(email), ct);
 
         if (isEmailExists)
         {

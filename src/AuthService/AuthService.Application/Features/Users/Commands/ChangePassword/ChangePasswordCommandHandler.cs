@@ -25,7 +25,7 @@ public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComman
         _logger.LogInformation("Starting Change Password process for UserId: {@UserId}", request.UserId);
 
         var userRepo = _unitOfWork.GetRepository<User>();
-        var user = await userRepo.GetSingleBySpecAsync(new GetUserByIdSpec(request.UserId, true), ct);
+        var user = await userRepo.FirstOrDefaultAsync(new GetUserByIdSpec(request.UserId, true), ct);
 
         if (user is null)
         {

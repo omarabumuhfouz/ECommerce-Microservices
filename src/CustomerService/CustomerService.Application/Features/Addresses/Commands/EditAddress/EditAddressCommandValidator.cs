@@ -1,4 +1,4 @@
-namespace CustomerService.Application.Validators.Addresses;
+namespace CustomerService.Application.Features.Addresses.Commands.EditAddress;
 
 public class EditAddressCommandValidator : AbstractValidator<EditAddressCommand>
 {

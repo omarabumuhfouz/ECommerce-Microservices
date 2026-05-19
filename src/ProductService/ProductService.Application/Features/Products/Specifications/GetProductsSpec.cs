@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using ProductService.Application.Features.Products.DTOs;
 using ProductService.Domain.Constants;
+using ProductService.Domain.Products;
 using SharedKernel.Common;
 
 namespace ProductService.Application.Features.Products.Specifications;

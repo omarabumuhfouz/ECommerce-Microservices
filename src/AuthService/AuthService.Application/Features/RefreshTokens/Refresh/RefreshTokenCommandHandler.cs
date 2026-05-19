@@ -26,7 +26,7 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, T
     {
         // 1. Resolve Client (Public String -> Guid)
         var client = await _unitOfWork.GetRepository<Client>()
-            .GetSingleBySpecAsync(new GetClientByPublicIdSpec(request.ClientId), ct);
+            .FirstOrDefaultAsync(new GetClientByPublicIdSpec(request.ClientId), ct);
 
         if (client is null) return DomainErrors.Client.NotFound;
 
@@ -36,7 +36,7 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, T
         var refreshTokenRepo = _unitOfWork.GetRepository<RefreshToken>();
         
         // 3. Find the exact token
-        var storedRefreshToken = await refreshTokenRepo.GetSingleBySpecAsync(
+        var storedRefreshToken = await refreshTokenRepo.FirstOrDefaultAsync(
             new GetRefreshTokenByTokenAndClientSpec(hashedToken, client.Id), ct);
 
         if (storedRefreshToken is null) 
@@ -57,7 +57,7 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, T
             var allActiveSpec = new GetActiveRefreshTokensByUserIdSpec(storedRefreshToken.UserId);
 
             var allTokens = await _unitOfWork.GetRepository<RefreshToken>()
-                                             .ListAsync(allActiveSpec, ct);
+                                             .GetListAsync(allActiveSpec, ct);
 
             // 2. Revoke them all immediately
             foreach (var token in allTokens)
@@ -81,7 +81,7 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, T
 
         // 6. Retrieve User (Only now do we pay the cost to fetch the user)
         var user = await _unitOfWork.GetRepository<User>()
-            .GetSingleBySpecAsync(new GetUserByIdSpec(storedRefreshToken.UserId), ct);
+            .FirstOrDefaultAsync(new GetUserByIdSpec(storedRefreshToken.UserId), ct);
 
         if (user is null) return DomainErrors.User.NotFound(storedRefreshToken.UserId);
 

@@ -8,7 +8,6 @@ public record CreateProductCommand(
     string Description,
     decimal Price,
     string Currency,
-    int StockQuantity,
     ImageDto MainImage,
     int DiscountPercentage,
     DateTime? DiscountEndDate,

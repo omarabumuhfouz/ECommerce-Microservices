@@ -1,4 +1,5 @@
 ﻿using CustomerService.Domain.Constants;
+using CustomerService.Domain.Customers;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CustomerService.Infrastructure.Data.Config;
@@ -9,10 +10,15 @@ public sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
     {
         builder.ToTable("Customers");
 
-        builder.HasKey(c => c.Id);
+        builder.HasKey(c => c.Id)
+            .IsClustered(false);
+
 
         builder.Property(c => c.Id)
             .ValueGeneratedNever();
+
+builder.HasIndex(c => c.CreatedOnUtc)
+            .IsClustered(true);
 
         builder.Property(c => c.UserId)
             .IsRequired();
@@ -48,7 +54,5 @@ public sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.Navigation(c => c.Addresses)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
-
-        builder.HasIndex(c => c.UserId).IsUnique(true);
     }
 }

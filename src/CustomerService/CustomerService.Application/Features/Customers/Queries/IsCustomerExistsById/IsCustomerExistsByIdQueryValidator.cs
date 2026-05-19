@@ -1,8 +1,4 @@
-using CustomerService.Application.Customers.Queries;
-
-using CustomerService.Application.Extensions;
-
-namespace CustomerService.Application.Customers.Validators;
+namespace CustomerService.Application.Features.Customers.Queries.IsCustomerExistsById;
     public class IsCustomerExistsByIdQueryValidator : AbstractValidator<IsCustomerExistsByIdQuery>
     {
         public IsCustomerExistsByIdQueryValidator()

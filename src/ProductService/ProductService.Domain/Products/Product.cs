@@ -1,12 +1,12 @@
 ﻿using ProductService.Domain.Errors;
-using ProductService.Domain.TagManagement;
+using ProductService.Domain.Tags;
 using ProductService.Domain.ValueObjects;
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared;
+using SharedKernel.Primitives;
+using SharedKernel.Primitives.Results;
 
-namespace ProductService.Domain.ProductManagement;
+namespace ProductService.Domain.Products;
 
-public record Product : AggregateRoot
+public sealed class Product : AggregateRoot, IAuditableEntity, ISoftDeletable
 {
     public IReadOnlyCollection<Image> RelatedImages => _relatedImages.AsReadOnly();
     public IReadOnlyCollection<Feature> Features => _features.AsReadOnly();
@@ -17,8 +17,6 @@ public record Product : AggregateRoot
         Guid categoryId,
         string name,
         string description,
-        int stockQuantity,
-        bool isAvailable,
         Money price,
         Discount discount,
         Image mainImage,
@@ -30,8 +28,6 @@ public record Product : AggregateRoot
         CategoryId = categoryId;
         Name = name;
         Description = description;
-        StockQuantity = stockQuantity;
-        IsAvailable = isAvailable;
         Price = price;
         Discount = discount;
         MainImage = mainImage;
@@ -40,21 +36,64 @@ public record Product : AggregateRoot
         _tags = tags?.ToList() ?? new();
     }
 
-    protected Product() { }
+
+
+    #pragma warning disable CS8618 
+    private Product() { }
+    #pragma warning restore CS8618
 
     public string Name { get; private set; }
     public string Description { get; private set; }
     public Money Price { get; private set; } = Money.Zero();
     public Discount Discount { get; private set; } = Discount.Zero();
-    public int StockQuantity { get; private set; }
-    public bool IsAvailable { get; private set; }
     public Guid CategoryId { get; private set; }
     public Image MainImage { get; private set; }
+
+    public DateTime CreatedOnUtc { get ; set ; }
+    public DateTime? ModifiedOnUtc { get ; set ; }
+
+    public bool IsDeleted { get; private set; }
+
+    public DateTime? DeletedOnUtc { get; private set; }
+
     private List<Image> _relatedImages;
     private readonly List<Feature> _features;
     private readonly List<Tag> _tags;
 
-    
+
+    public static Result<Product> Create(
+        Guid id,
+        Guid categoryId,
+        string name,
+        string description,
+        Money price,
+        Discount discount,
+        Image mainImage,
+        List<Image>? relatedImages = null,
+        List<Feature>? features = null,
+        List<Tag>? tags = null)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure<Product>(DomainErrors.Product.EmptyName);
+
+        if (price is null || price.Amount < 0)
+            return Result.Failure<Product>(DomainErrors.Product.InvalidPrice);
+
+        var product = new Product(
+            id,
+            categoryId,
+            name,
+            description,
+            price,
+            discount,
+            mainImage,
+            relatedImages,
+            features,
+            tags);
+
+        return Result.Success(product);
+    }
+
     #region Discount Management
 
     public Result EditDiscount(int percentage, DateTime? endDate = null)
@@ -62,7 +101,7 @@ public record Product : AggregateRoot
         if (!IsDisountExists()) return DomainErrors.Discount.NotFound;
 
         var discountResult = Discount.Create(percentage, endDate);
-        if(discountResult.IsFailure) return discountResult.TopError;
+        if (discountResult.IsFailure) return discountResult.TopError;
 
         Discount = discountResult.Value;
 
@@ -83,22 +122,23 @@ public record Product : AggregateRoot
 
     #region Main Info Management
 
-    public void EditStatus(bool isAvailable) => IsAvailable = isAvailable;
 
     public Result EditMainInfo(string name, string description)
     {
         var isValid = Result.Success()
-                                .FailIf(_ValidateName(name), DomainErrors.Product.NameRequired)
+                                .FailIf(_ValidateName(name), DomainErrors.Product.EmptyName)
                                 .FailIf(_ValidateDescription(description), DomainErrors.Product.DescriptionRequired);
 
         if (isValid.IsFailure) return isValid.TopError;
+
+        if (Name != name) RaiseDomainEvent(new ChangeProductNameDomainEvent(Id, name));
 
         Name = name;
         Description = description;
 
         return Result.Success();
     }
-
+ 
     public Result EditCategory(Guid newCategoryId)
     {
         if (_ValidateCategoryId(newCategoryId)) return DomainErrors.Category.IdRequired;
@@ -114,31 +154,6 @@ public record Product : AggregateRoot
         if (priceResult.IsFailure) return priceResult.TopError;
 
         Price = priceResult.Value;
-        return Result.Success();
-    }
-
-    #endregion
-
-    #region Stock Management
-    public Result IncreaseStock(int quantity)
-    {
-        if (quantity <= 0) return DomainErrors.Product.QuantityMustBePositive;
-
-        StockQuantity = StockQuantity + quantity;
-        IsAvailable = true;
-
-        return Result.Success();
-    }
-
-    public Result DecreaseStock(int quantity)
-    {
-        if (quantity <= 0) return DomainErrors.Product.QuantityMustBePositive;
-
-        if (StockQuantity < quantity) return DomainErrors.Product.InsufficientStock;
-
-        StockQuantity = StockQuantity - quantity;
-        IsAvailable = StockQuantity > 0;
-
         return Result.Success();
     }
 
@@ -306,6 +321,25 @@ public record Product : AggregateRoot
     }
 
     public void ClearTags() => _tags.Clear();
-   
+
+
+
     #endregion
+
+    public Result Delete()
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTime.UtcNow;
+
+        return Result.Success();
+    }
+
+    public Result Restore()
+    {
+        IsDeleted = false;
+        DeletedOnUtc = null;
+
+        return Result.Success();
+    }
+
 }

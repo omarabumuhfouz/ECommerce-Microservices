@@ -10,7 +10,7 @@ public class AddFeaturesToProductCommandValidator : AbstractValidator<AddFeature
 
         RuleFor(x => x.Features)
             .NotEmpty().WithMessage("At least one feature must be provided.") // Checks for null or empty list
-            .Must(f => f.Count <= ProductConstants.MAX_ADDED_FEATURES_AT_ONCE).WithMessage("You cannot add more than 20 features at once."); // Optional limit
+            .Must(f => f.Count <= ProductConstants.MaxAddedFeaturesAtOnce).WithMessage("You cannot add more than 20 features at once."); // Optional limit
 
         // The "RuleForEach" validates every element in the list
         RuleForEach(x => x.Features)

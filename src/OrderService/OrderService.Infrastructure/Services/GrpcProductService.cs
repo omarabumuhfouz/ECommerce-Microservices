@@ -3,7 +3,7 @@ using Grpc.Core;
 using OrderService.Application.Services;
 using OrderService.Domain.DTOs;
 using OrderService.Domain.Errors;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace OrderService.Infrastructure.Services;
 

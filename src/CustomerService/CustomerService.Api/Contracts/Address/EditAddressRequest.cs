@@ -1,4 +1,4 @@
-using CustomerService.Application.Addresses.Commands;
+using CustomerService.Application.Features.Addresses.Commands.EditAddress;
 
 namespace CustomerService.Api.Contracts.Address;
 

@@ -1,4 +1,5 @@
 ﻿using ProductService.Application.Features.Products.DTOs;
+using ProductService.Domain.Products;
 using SharedKernel.Common;
 
 namespace ProductService.Application.Features.Products.Queries.GetProducts;

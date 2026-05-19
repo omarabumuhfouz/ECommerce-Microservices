@@ -1,6 +1,4 @@
-using CustomerService.Application.Extensions;
-
-namespace CustomerService.Application.Addresses.Commands.CreateAddress;
+namespace CustomerService.Application.Features.Addresses.Commands.CreateAddress;
 
 public class CreateAddressCommandValidator : AbstractValidator<CreateAddressCommand>
 {

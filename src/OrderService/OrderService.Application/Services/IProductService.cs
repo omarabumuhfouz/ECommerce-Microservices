@@ -1,4 +1,4 @@
-﻿using OrderService.Domain.Orders.ValueObjects;
+﻿using SharedKernel.Primitives.Results;
 
 namespace OrderService.Application.Services;
 

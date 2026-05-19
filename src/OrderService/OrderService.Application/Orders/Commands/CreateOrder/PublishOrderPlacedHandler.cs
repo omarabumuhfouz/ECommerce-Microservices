@@ -1,6 +1,5 @@
 using MassTransit;
 using OrderService.Domain.Orders.Events;
-using SharedKernel.Abstractions;
 using SharedKernel.IntegrationEvents.Orders;
 
 public class PublishOrderPlacedHandler : IDomainEventHandler<OrderCreatedDomainEvent>

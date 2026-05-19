@@ -1,5 +1,3 @@
-using SharedKernel.Shared;
-
 namespace AuthService.Domain.Errors;
 
 public static class DomainErrors

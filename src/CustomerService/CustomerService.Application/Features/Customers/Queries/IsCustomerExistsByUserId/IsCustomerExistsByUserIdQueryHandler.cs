@@ -1,3 +1,5 @@
+using CustomerService.Domain.Customers;
+
 namespace CustomerService.Application.Features.Customers.Queries.IsCustomerExistsByUserId;
 
 public class IsCustomerExistsByUserIdQueryHandler : IQueryHandler<IsCustomerExistsByUserIdQuery, Unit>
@@ -13,13 +15,20 @@ public class IsCustomerExistsByUserIdQueryHandler : IQueryHandler<IsCustomerExis
         _logger = logger;
     }
 
-    async Task<Result<Unit>> IRequestHandler<IsCustomerExistsByUserIdQuery, Result<Unit>>.Handle(IsCustomerExistsByUserIdQuery request, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Checking if customer with UserID: {UserId} exists", request.UserId);
+    async Task<Result<Unit>> IRequestHandler<IsCustomerExistsByUserIdQuery, Result<Unit>>.Handle(
+    IsCustomerExistsByUserIdQuery request, 
+    CancellationToken ct)
+{
+    _logger.LogInformation("Checking if customer with UserID: {UserId} exists", request.UserId);
 
-        var isExists = await _unitOfWork.GetRepository<Customer>()
-                            .IsExistsAsync(c => c.UserId == request.UserId, cancellationToken);
-
-        return isExists ? Unit.Value : DomainErrors.Customer.NotFound(request.UserId);
-    }
+    return await Result.Success()
+        .Ensure(async () => await _unitOfWork.GetRepository<Customer>()
+            .AnyAsync(c => c.UserId == request.UserId, ct), 
+            DomainErrors.Customer.NotFoundByUser(request.UserId))
+        
+        .TapError(error => _logger.LogWarning("Existence check failed: Customer for User {UserId} not found.", 
+            request.UserId))
+            
+        .Map(_ => Unit.Value);
+}
 }

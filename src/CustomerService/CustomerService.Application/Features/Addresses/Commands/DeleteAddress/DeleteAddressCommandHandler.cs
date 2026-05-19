@@ -1,4 +1,8 @@
-﻿namespace CustomerService.Application.Addresses.Commands.DeleteAddress;
+﻿using CustomerService.Application.Features.Specifications.Customers;
+using CustomerService.Domain.Customers;
+using SharedKernel.Common;
+
+namespace CustomerService.Application.Features.Addresses.Commands.DeleteAddress;
 public class DeleteAddressCommandHandler : ICommandHandler<DeleteAddressCommand, Unit>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -13,32 +17,26 @@ public class DeleteAddressCommandHandler : ICommandHandler<DeleteAddressCommand,
         _logger = logger;
     }
 
-    async Task<Result<Unit>> IRequestHandler<DeleteAddressCommand, Result<Unit>>.Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Starting Deleting Address : {AddressId} For CustomerId : {@CustomerId}",
-             request.AddressId,
-             request.CustomerId);
+    async Task<Result<Unit>> IRequestHandler<DeleteAddressCommand, Result<Unit>>.Handle(
+    DeleteAddressCommand request, 
+    CancellationToken ct)
+{
+    _logger.LogInformation("Deleting Address {AddressId} for Customer {CustomerId}", 
+        request.AddressId, request.CustomerId);
 
-        var customerRepository = _unitOfWork.GetRepository<Customer>();
-        var customer = await customerRepository.GetSingleBySpecAsync(new GetCustomerByIdSpec(request.CustomerId, true), cancellationToken);
+    return await _unitOfWork.GetRepository<Customer>()
+        .FirstOrDefaultAsync(new GetCustomerByIdSpec(request.CustomerId, true), ct)
+        .ToResult(DomainErrors.Customer.NotFound(request.CustomerId))
+        
+        .TapError(error => _logger.LogWarning("Delete address failed: {Error}", error.Message))
 
-        if (customer is null)
-        {
-            _logger.LogWarning("Customer Not found with Id {@CustomerId}", request.CustomerId);
-            return DomainErrors.Customer.NotFound(request.CustomerId);
-        }
+        .Bind(customer => customer.DeleteAddress(request.AddressId))
 
-        var result = customer.DeleteAddress(request.AddressId);
+        .Tap(async () => await _unitOfWork.SaveChangesAsync(ct))
 
-        if (result.IsFailure) return result.TopError;
+        .Tap(() => _logger.LogInformation("Address {AddressId} deleted successfully for Customer {CustomerId}", 
+            request.AddressId, request.CustomerId))
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation(
-        "Address Deleted Successfully owns by Customer Id :{@CustomerId}, with Address Id : {@AddressId}",
-         request.CustomerId,
-         request.AddressId);
-
-        return Unit.Value;
-    }
+        .Map(_ => Unit.Value);
+}
 }

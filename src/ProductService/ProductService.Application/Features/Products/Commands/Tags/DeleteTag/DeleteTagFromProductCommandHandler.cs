@@ -1,5 +1,6 @@
-using ProductService.Domain.TagManagement;
+using ProductService.Domain.Products;
 using ProductService.Domain.TagManagement.Specifications;
+using ProductService.Domain.Tags;
 
 namespace ProductService.Application.Features.Products.Commands.Tags.DeleteTag;
 

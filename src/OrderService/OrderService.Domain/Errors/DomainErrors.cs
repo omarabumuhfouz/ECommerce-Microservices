@@ -1,5 +1,6 @@
 ﻿using OrderService.Domain.Constants; // Use DomainLimits & ErrorCodes
 using OrderService.Domain.Orders.Enums;
+using SharedKernel.Primitives.Results;
 
 namespace OrderService.Domain.Errors;
 

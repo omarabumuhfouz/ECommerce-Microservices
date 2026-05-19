@@ -1,4 +1,4 @@
-using ProductService.Domain.TagManagement;
+using ProductService.Domain.Tags;
 
 namespace ProductService.Application.Features.Tags.Queries.GetTags;
 
@@ -19,7 +19,7 @@ public class GetTagsQueryHandler : IQueryHandler<GetTagsQuery, List<TagDto>>
     {
         var tagRepo = _unitOfWork.GetRepository<Tag>();
 
-        var tags = await tagRepo.ListAsync(cancellationToken);
+        var tags = await tagRepo.GetListAsync(cancellationToken);
 
         if (tags is null || !tags.Any())
         {

@@ -1,3 +1,4 @@
+using ProductService.Domain.Products;
 using ProductService.Domain.ValueObjects;
 
 namespace ProductService.Application.Features.Products.Commands.ImagesManagement.AddRelatedImages;
@@ -15,12 +16,14 @@ public class AddRelatedImagesToProductCommandHandler : ICommandHandler<AddRelate
         _logger = logger;
     }
 
-    async Task<Result<Unit>> IRequestHandler<AddRelatedImagesToProductCommand, Result<Unit>>.Handle(AddRelatedImagesToProductCommand request, CancellationToken cancellationToken)
+    async Task<Result<Unit>> IRequestHandler<AddRelatedImagesToProductCommand, Result<Unit>>.Handle(AddRelatedImagesToProductCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Starting Adding Related Images to product : {ProductId}", request.ProductId);
 
+
         var productRepo = _unitOfWork.GetRepository<Product>();
-        var product = await productRepo.GetSingleBySpecAsync(new GetProductByIdSpec(request.ProductId, true), cancellationToken);
+
+        var product = await productRepo.FirstOrDefaultAsync(new GetProductByIdSpec(request.ProductId, true), ct);
         if (product is null) return DomainErrors.Product.NotFound(request.ProductId);
 
         var results = request.RelatedImages.Select(ri => Image.Create(ri.Url, ri.AltText)).ToList();
@@ -30,7 +33,7 @@ public class AddRelatedImagesToProductCommandHandler : ICommandHandler<AddRelate
         var addResult = product.AddRelatedImages(results.Select(r => r.Value).ToList());
         if (addResult.IsFailure) return addResult.TopError;
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation(
         "Successfully added {ImageCount} related images to product {ProductId}",

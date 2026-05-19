@@ -16,7 +16,7 @@ public class GetUserByIdQueryHandler : IQueryHandler<GetUserByIdQuery, UserDto>
     async Task<Result<UserDto>> IRequestHandler<GetUserByIdQuery, Result<UserDto>>.Handle(GetUserByIdQuery request, CancellationToken ct)
     {
         var user = await _unitOfWork.GetRepository<User>()
-                    .GetSingleBySpecAsync(new GetUserByIdSpec(request.UserId), ct);
+                    .FirstOrDefaultAsync(new GetUserByIdSpec(request.UserId), ct);
 
         if (user is null) return DomainErrors.User.NotFound(request.UserId);
 

@@ -1,6 +1,6 @@
-using MassTransit;
+using CustomerService.Domain.Customers;
 
-namespace CustomerService.Application.Customers.Commands.AddCustomer;
+namespace CustomerService.Application.Features.Customers.Commands.AddCustomer;
 
 public class AddCustomerCommandHandler : ICommandHandler<AddCustomerCommand, Guid>
 {
@@ -19,23 +19,24 @@ public class AddCustomerCommandHandler : ICommandHandler<AddCustomerCommand, Gui
 
     async Task<Result<Guid>> IRequestHandler<AddCustomerCommand, Result<Guid>>.Handle(AddCustomerCommand request, CancellationToken ct)
     {
+        _logger.LogInformation("Processing AddCustomerCommand for UserId: {UserId}", request.UserId);
+
         var customerRepository = _unitOfWork.GetRepository<Customer>();
 
-        if (await customerRepository.IsExistsAsync(c => c.UserId == request.UserId, ct))
-        {
-            _logger.LogWarning("Failed to create customer. A customer with UserId {UserId} already exists.", request.UserId);
-            return DomainErrors.Customer.UserIdAlreadyExists(request.UserId);
-        }
+        return await Result.Success(request)
 
-        var addedCustomer = Customer.Create(request.UserId, request.FirstName, request.LastName, request.PhoneNumber, null);
+            .Ensure(async () => !await customerRepository.AnyAsync(new GetCustomerByUserIdSpec(request.UserId), ct),
+                DomainErrors.Customer.UserIdAlreadyExists(request.UserId))
 
-        if (addedCustomer.IsFailure) return addedCustomer.TopError;
+            .Bind(_ => Customer.Create(request.UserId, request.FirstName, request.LastName, request.PhoneNumber, null))
 
-        await customerRepository.AddAsync(addedCustomer.Value, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+            .Tap(async customer => await customerRepository.AddAsync(customer, ct))
 
-        _logger.LogInformation("Customer Added Succesfully relater to UserId : {@UserId}", request.UserId);
+            .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
 
-        return addedCustomer.Value.Id;
+            .Tap(customer => _logger.LogInformation("Customer {CustomerId} created for User {UserId}", customer.Id, request.UserId))
+            .TapError(error => _logger.LogWarning("Create Customer failed: {@Error}", error))
+
+            .Map(customer => customer.Id);
     }
 }

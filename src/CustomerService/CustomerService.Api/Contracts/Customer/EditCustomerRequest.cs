@@ -1,4 +1,4 @@
-using CustomerService.Application.Customers.Commands.EditCustomer;
+using CustomerService.Application.Features.Customers.Commands.EditCustomer;
 
 namespace CustomerService.Api.Contracts.Customer;
 

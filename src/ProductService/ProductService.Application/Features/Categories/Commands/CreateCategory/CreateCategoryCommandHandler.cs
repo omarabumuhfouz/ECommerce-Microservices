@@ -15,26 +15,25 @@ public class CreateCategoryCommandHandler : ICommandHandler<CreateCategoryComman
 
     }
 
-    async Task<Result<Guid>> IRequestHandler<CreateCategoryCommand, Result<Guid>>.Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Starting Adding New Category with Name : {@Name}", request.Name);
         var categoryRepository = _unitOfWork.GetRepository<Category>();
 
-        if (await categoryRepository.IsExistsAsync(c => c.Name.Value == request.Name, cancellationToken))
-            return DomainErrors.Category.DuplicateName(request.Name);
+        bool isDuplicate = await categoryRepository.AnyAsync(c => c.Name.Value == request.Name, ct);
 
+        if (isDuplicate) return DomainErrors.Category.DuplicateName(request.Name);
 
-        var categoryResult = Category.Create(Guid.NewGuid(), request.Name, request.Description);
+        return Category.Create(Guid.NewGuid(), request.Name, request.Description)
 
-        if (categoryResult.IsFailure) return categoryResult.TopError;
+            .Tap(async category => await categoryRepository.AddAsync(category))
 
-        await categoryRepository.AddAsync(categoryResult.Value, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+            .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
 
-        _logger.LogInformation(
-                "Category created successfully with Id: {CategoryId}",
-                categoryResult.Value.Id);
+            .Tap(category => _logger.LogInformation("Category created successfully with Id: {CategoryId}", category.Id))
 
-        return categoryResult.Value.Id;
+            .TapError(error => _logger.LogError("Failed to create Category. Error: {ErrorMessage}", error.Message))
+            .Map(category => category.Id);
+
     }
 }

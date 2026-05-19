@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.Features.DeleteFeature;
 
 public class DeleteFeatureFromProductCommandHandler : ICommandHandler<DeleteFeatureFromProductCommand, Unit>

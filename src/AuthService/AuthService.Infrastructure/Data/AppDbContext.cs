@@ -15,7 +15,7 @@ namespace AuthService.Infrastructure.Data
         {
         }
         public DbSet<Client> Clients { get; set; }
-        public DbSet<SigningKey> SigningKeys { get; set; }
+    public DbSet<SigningKey> SigningKeys { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<User> Users { get; set; }
 

@@ -1,6 +1,9 @@
 ﻿using CustomerService.Application.Addresses.DTOs;
+using CustomerService.Application.Features.Specifications.Customers;
+using CustomerService.Domain.Customers;
+using SharedKernel.Common;
 
-namespace CustomerService.Application.Addresses.Queries.GetAddressesByCustomer;
+namespace CustomerService.Application.Features.Addresses.Queries.GetAddressesByCustomer;
 public class GetAddressesByCustomerQueryHandler : IQueryHandler<GetAddressesByCustomerQuery, List<AddressDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -18,21 +21,25 @@ public class GetAddressesByCustomerQueryHandler : IQueryHandler<GetAddressesByCu
         _mapper = mapper;
     }
 
-    async Task<SharedKernel.Shared.Result<List<AddressDto>>> IRequestHandler<GetAddressesByCustomerQuery, SharedKernel.Shared.Result<List<AddressDto>>>.Handle(GetAddressesByCustomerQuery request, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Starting Retrived All Address for Customer : {@CustomerId}", request.CustomerId);
+    async Task<Result<List<AddressDto>>> IRequestHandler<GetAddressesByCustomerQuery, Result<List<AddressDto>>>.Handle(
+    GetAddressesByCustomerQuery request, 
+    CancellationToken ct)
+{
+    _logger.LogInformation("Retrieving addresses for Customer: {CustomerId}", request.CustomerId);
 
-        var customerRepository = _unitOfWork.GetRepository<Customer>();
-        var customer = await customerRepository.GetSingleBySpecAsync(new GetCustomerByIdSpec(request.CustomerId), cancellationToken);
-
-        if (customer is null)
-        {
-            _logger.LogWarning("Customer Not found with Id: {@CustomerId}", request.CustomerId);
-            return DomainErrors.Customer.NotFound(request.CustomerId);
-        }
-
-        if (!customer.Addresses.Any()) return new List<AddressDto>();
-
-        return _mapper.Map<List<AddressDto>>(customer.Addresses);
-    }
+    return await _unitOfWork.GetRepository<Customer>()
+        .FirstOrDefaultAsync(new GetCustomerByIdSpec(request.CustomerId), ct)
+        .ToResult(DomainErrors.Customer.NotFound(request.CustomerId))
+        
+        .TapError(error => _logger.LogWarning("Address retrieval failed: {@Error}", error))
+        
+        .Map(customer => {
+            var addresses = customer.Addresses ?? new List<Address>();
+            
+            _logger.LogInformation("Found {Count} addresses for Customer {CustomerId}", 
+                addresses.Count, request.CustomerId);
+                
+            return _mapper.Map<List<AddressDto>>(addresses);
+        });
+}
 }

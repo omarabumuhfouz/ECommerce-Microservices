@@ -1,4 +1,5 @@
 ﻿using ProductService.Application.Features.Categories.DTOs;
+using ProductService.Domain.Categories;
 
 namespace ProductService.Application.Features.Categories.Queries.GetCategories;
 
@@ -20,10 +21,10 @@ public class GetCategoriesQueryHandler : IQueryHandler<GetCategoriesQuery, List<
         _logger = logger;
     }
 
-    async Task<Result<List<CategoryDto>>> IRequestHandler<GetCategoriesQuery, Result<List<CategoryDto>>>.Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
+    async Task<Result<List<CategoryDto>>> IRequestHandler<GetCategoriesQuery, Result<List<CategoryDto>>>.Handle(GetCategoriesQuery request, CancellationToken ct)
     {
         var categoryRepo = _unitOfWork.GetRepository<Category>();
-        var categories = await categoryRepo.ListAsync(new GetCategoriesSpec(), cancellationToken);
+        var categories = await categoryRepo.GetListAsync(new GetCategoriesSpec(), ct);
         
         if(categories is null ||!categories.Any())
         {

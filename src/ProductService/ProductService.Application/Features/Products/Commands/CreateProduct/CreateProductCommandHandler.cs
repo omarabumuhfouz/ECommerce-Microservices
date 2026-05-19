@@ -1,6 +1,5 @@
-﻿using ProductService.Domain.Errors;
-using ProductService.Domain.TagManagement;
-using ProductService.Domain.TagManagement.Specifications;
+﻿using ProductService.Domain.TagManagement.Specifications;
+using ProductService.Domain.Tags;
 using ProductService.Domain.ValueObjects;
 
 namespace ProductService.Application.Features.Products.Commands.CreateProduct;
@@ -18,7 +17,7 @@ public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand,
         _logger = logger;
     }
 
-    async Task<Result<Guid>> IRequestHandler<CreateProductCommand, Result<Guid>>.Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    async Task<Result<Guid>> IRequestHandler<CreateProductCommand, Result<Guid>>.Handle(CreateProductCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Starting to create product with Name : {@ProductName}", request.Name);
 
@@ -26,17 +25,17 @@ public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand,
         var categoryRepo = _unitOfWork.GetRepository<Category>();
         var tagRepo = _unitOfWork.GetRepository<Tag>();
 
-        if (await prodcutRepo.IsExistsAsync(p => p.Name == request.Name, cancellationToken)) 
+        if (await prodcutRepo.AnyAsync(p => p.Name == request.Name, ct)) 
             return DomainErrors.Product.DuplicateName(request.Name);
 
-        if (!await categoryRepo.IsExistsAsync(c => c.Id == request.CategoryId, cancellationToken))
+        if (!await categoryRepo.AnyAsync(c => c.Id == request.CategoryId, ct))
             return DomainErrors.Category.NotFound(request.CategoryId);
 
         // Validate Tags
         List<Tag> tags = new List<Tag>();
         if (request.TagIds != null && request.TagIds.Any())
         {
-            tags = await tagRepo.ListAsync(new GetTagsByIdsSpec(request.TagIds), cancellationToken);
+            tags = await tagRepo.GetListAsync(new GetTagsByIdsSpec(request.TagIds), ct);
 
             if (tags.Count != request.TagIds.Count)
             {
@@ -46,29 +45,46 @@ public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand,
             }
         }
 
-        // if Failed will throw ProductBuildException
-        var productBuilder = ProductBuilder.CreateNew()
-                            .WithId(Guid.NewGuid())
-                            .WithCategoryId(request.CategoryId)
-                            .WithName(request.Name)
-                            .WithDescription(request.Description)
-                            .WithStockQuantity(request.StockQuantity)
-                            .WithAvailability(true)
-                            .WithPrice(request.Price, request.Currency)
-                            .WithDiscount(request.DiscountPercentage, request.DiscountEndDate)
-                            .WithMainImage(request.MainImage.Url, request.MainImage.AltText)
-                            .AddRelatedImages(request.RelatedImages?.Select(rid => Image.Create(rid.Url, rid.AltText).Value))
-                            .AddFeatures(request.Features?.Select(fd => Feature.Create(fd.Name, fd.Value).Value))
-                            .AddTags(tags)
-                            .Build();
+        var priceResult = Money.Create(request.Price, request.Currency);
+        var discountResult = Discount.Create(request.DiscountPercentage, request.DiscountEndDate);
+        var mainImageResult = Image.Create(request.MainImage.Url, request.MainImage.AltText);
 
+        if (priceResult.IsFailure) return Result.Failure<Guid>(priceResult.TopError);
+        if (discountResult.IsFailure) return Result.Failure<Guid>(discountResult.TopError);
+        if (mainImageResult.IsFailure) return Result.Failure<Guid>(mainImageResult.TopError);
 
-        await prodcutRepo.AddAsync(productBuilder, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var relatedImages = request.RelatedImages?
+            .Select(img => Image.Create(img.Url, img.AltText).Value).ToList();
 
-        _logger.LogInformation("Product Creatd Successfully with Id {@ProductId}", productBuilder.Id);
+        var features = request.Features?
+            .Select(f => Feature.Create(f.Name, f.Value).Value).ToList();
 
-        return productBuilder.Id;
+        return Product.Create(
+                        id: Guid.NewGuid(),
+                        categoryId: request.CategoryId,
+                        name: request.Name,
+                        description: request.Description,
+                        price: priceResult.Value,
+                        discount: discountResult.Value,
+                        mainImage: mainImageResult.Value,
+                        relatedImages: relatedImages,
+                        features: features,
+                        tags: tags)
+
+                    // Add to EF Core Change Tracker (Synchronous!)
+                    .Tap(product => prodcutRepo.AddAsync(product))
+                    .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
+
+                    // Success & Error Logging
+                    .Tap(product => _logger.LogInformation(
+                        "Product Created Successfully with Id {@ProductId}", product.Id))
+
+                    .TapError(error => _logger.LogError(
+                        "Failed to build Product. Error Code: {ErrorCode}, Message: {ErrorMessage}",
+                        error.Code, error.Message))
+
+                    .Map(product => product.Id);
+
 
     }
 }

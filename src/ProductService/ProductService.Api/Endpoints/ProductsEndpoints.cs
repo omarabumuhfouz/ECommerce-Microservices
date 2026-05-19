@@ -1,5 +1,5 @@
 #region Usings
-    
+
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Api.Contracts.Product;
@@ -10,7 +10,6 @@ using ProductService.Application.Features.Products.Commands.DeleteProduct;
 using ProductService.Application.Features.Products.Commands.EditPrice;
 using ProductService.Application.Features.Products.Commands.EditProduct;
 using ProductService.Application.Features.Products.Commands.EditProductStatus;
-using ProductService.Application.Features.Products.Commands.EditStock;
 using ProductService.Application.Features.Products.Commands.Features.AddFeatures;
 using ProductService.Application.Features.Products.Commands.Features.DeleteFeature;
 using ProductService.Application.Features.Products.Commands.Features.EditFeature;
@@ -18,6 +17,7 @@ using ProductService.Application.Features.Products.Commands.ImagesManagement.Add
 using ProductService.Application.Features.Products.Commands.ImagesManagement.DeleteRelatedImage;
 using ProductService.Application.Features.Products.Commands.ImagesManagement.ReplaceMainImage;
 using ProductService.Application.Features.Products.Commands.ImagesManagement.ReplaceRelatedImage;
+using ProductService.Application.Features.Products.Commands.RestoreProduct;
 using ProductService.Application.Features.Products.Commands.Tags.AddTag;
 using ProductService.Application.Features.Products.Commands.Tags.DeleteTag;
 using ProductService.Application.Features.Products.DTOs;
@@ -26,7 +26,6 @@ using ProductService.Application.Features.Products.Queries.GetProductNames;
 using ProductService.Application.Features.Products.Queries.GetProducts;
 using SharedKernel.Common;
 using SharedKernel.Extensions;
-using SharedKernel.Constants; // 👈 1. Add SharedKernel for AuthConstants
 # endregion
 
 namespace ProductService.Api.Endpoints;
@@ -80,6 +79,14 @@ public static class ProductsEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .WithSummary("Delete a product")
             .WithName("Delete Product");
+
+        productsApi.MapPut("/{productId:Guid}", RestoreProduct)
+            // .RequireAuthorization(AuthConstants.Policies.AdminOnly) 
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .WithSummary("Restore Deleted  product")
+            .WithName("RestoreProduct");
 
         productsApi.MapGet("/{productId:Guid}", GetProductById)
             .Produces<ProductDto>(StatusCodes.Status200OK)
@@ -174,17 +181,7 @@ public static class ProductsEndpoints
 
         #region  Product Stock Endpoints (Admin Only)
 
-        productsApi.MapPut("{productId:Guid}/stock", EditStock)
-            // .RequireAuthorization(AuthConstants.Policies.AdminOnly) 
-            .Accepts<EditStockRequest>("application/json")
-            .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status409Conflict)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithSummary("Update product stock level")
-            .WithName("EditStock");
-
+        
         productsApi.MapPut("{productId:Guid}/price", EditPrice)
             // .RequireAuthorization(AuthConstants.Policies.AdminOnly) 
             .Accepts<EditPriceRequest>("application/json")
@@ -293,32 +290,9 @@ public static class ProductsEndpoints
 
     #region  Product Stock Method
 
-    private static async Task<IResult> EditStock(
-        [FromRoute] Guid productId,
-        [FromBody] EditStockRequest request,
-        [FromServices] ISender sender)
-    {
-        var result = await sender.Send(new EditStockCommand(productId, request.Quantity, request.Operation));
-
-        return result.Match(
-            onValue: value => Results.NoContent(),
-            onError: error => error.ToProblem()
-        );
-    }
     
-     private static async Task<IResult> EditPrice(
-        [FromRoute] Guid productId,
-        [FromBody] EditPriceRequest request,
-        [FromServices] ISender sender)
-    {
-        var result = await sender.Send(new EditPriceCommand(productId, request.Price, request.Currency));
-
-        return result.Match(
-            onValue: value => Results.NoContent(),
-            onError: error => error.ToProblem()
-        );
-    }
-
+    
+     
     #endregion
 
     #region Product Image Methods
@@ -446,11 +420,34 @@ public static class ProductsEndpoints
             onError: error => error.ToProblem()
         );
     }
-             
+
 
     #endregion
 
     #region Main Product Method
+
+    private static async Task<IResult> RestoreProduct(
+        [FromRoute] Guid productId,
+        [FromServices] ISender sender
+    )
+    {
+        var result = await sender.Send(new RestoreProductCommand(productId));
+        return result.Match(_ => Results.NoContent(), e => e.ToProblem());
+    }
+
+    private static async Task<IResult> EditPrice(
+            [FromRoute] Guid productId,
+            [FromBody] EditPriceRequest request,
+            [FromServices] ISender sender)
+    {
+        var result = await sender.Send(new EditPriceCommand(productId, request.Price, request.Currency));
+
+        return result.Match(
+            onValue: value => Results.NoContent(),
+            onError: error => error.ToProblem()
+        );
+    }
+
     private static async Task<IResult> CreateProduct(
         [FromBody] CreateProductCommand command,
         [FromServices] ISender sender)

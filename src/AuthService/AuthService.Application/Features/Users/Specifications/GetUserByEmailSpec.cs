@@ -1,10 +1,13 @@
+using Ardalis.Specification;
+
 namespace AuthService.Application.Features.Users.Specifications;
 
 public class GetUserByEmailSpec : Specification<User>
 {
-    public GetUserByEmailSpec(string email, bool withTracking = false) : base(u => u.Email == email)
+    public GetUserByEmailSpec(string email, bool withTracking = false)
     {
-        if (withTracking) EnableTracking();
+        Query.Where(u => u.Email.ToLower() == email.ToLower()); 
+        if (withTracking) Query.AsTracking(); 
         
     }
 }

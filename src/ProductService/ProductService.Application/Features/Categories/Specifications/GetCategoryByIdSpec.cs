@@ -1,10 +1,12 @@
-using SharedKernel.Specifications;
 
 namespace ProductService.Application.Features.Categories.Specifications;
 
-public class GetCategoryByIdSpec : Specification<Category>
+public sealed class GetCategoryByIdSpec : Specification<Category>
 {
-    public GetCategoryByIdSpec(Guid id) : base(c => c.Id == id)
+    public GetCategoryByIdSpec(Guid id, bool withTracking = false)
     {
+        Query.Where(category => category.Id == id);
+
+        if (withTracking) Query.AsTracking();
     }
 }

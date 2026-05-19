@@ -1,4 +1,4 @@
-using SharedKernel.Shared; // Assuming your Error/Result types are here
+using SharedKernel.Primitives.Results;
 
 namespace CancellationService.Domain.Errors;
 

@@ -1,6 +1,6 @@
 ﻿using ProductService.Domain.Constants;
 using ProductService.Domain.Errors;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace ProductService.Domain.ValueObjects
 {
@@ -12,14 +12,16 @@ namespace ProductService.Domain.ValueObjects
             Currency = currency.ToUpperInvariant();
         }
 
-        private Money() { }
+        #pragma warning disable CS8618 
+    private Money() { }
+    #pragma warning restore CS8618
 
         public decimal Amount { get; init; }
         public string Currency { get; init; }
 
         public static Result<Money> Create(decimal amount, string currency = "USD")
         {
-            if (amount < ProductConstants.PRICE_MIN) return DomainErrors.Money.InvalidAmount;
+            if (amount < ProductConstants.PriceMin) return DomainErrors.Money.InvalidAmount;
 
             if (string.IsNullOrWhiteSpace(currency)) return DomainErrors.Money.CurrencyRequired;
 
