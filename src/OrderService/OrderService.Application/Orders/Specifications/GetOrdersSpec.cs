@@ -33,8 +33,8 @@ public class GetOrdersSpec : Specification<Order, OrderDto>
             _ => p => p.OrderDate
         };
 
-        if (isAscending) Query.OrderBy(keySelector);
-        else Query.OrderByDescending(keySelector);
+        if (isAscending) Query.OrderBy(keySelector!);
+        else Query.OrderByDescending(keySelector!);
 
         Query.Skip((pageNumber - 1) * pageSize)
              .Take(pageSize);

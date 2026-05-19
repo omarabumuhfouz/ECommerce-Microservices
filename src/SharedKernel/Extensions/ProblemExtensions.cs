@@ -1,8 +1,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace SharedKernel.Extensions;
 

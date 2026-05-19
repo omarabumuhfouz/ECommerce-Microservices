@@ -25,10 +25,10 @@ public class GetProductsByCategoryQueryHandler : IQueryHandler<GetProductsByCate
         var categoryRepo = _unitOfWork.GetRepository<Category>();
         var productRepo = _unitOfWork.GetRepository<Product>();
 
-        if(!await categoryRepo.IsExistsAsync(c => c.Id == request.CategoryId, cancellationToken))
+        if(!await categoryRepo.AnyAsync(c => c.Id == request.CategoryId, cancellationToken))
                 return DomainErrors.Category.NotFound(request.CategoryId);
 
-        var products = await productRepo.ListAsync(new GetProductsByCategoryIdSpec(request.CategoryId), cancellationToken);
+        var products = await productRepo.GetListAsync(new GetProductsByCategoryIdSpec(request.CategoryId), cancellationToken);
         if (products is null || !products.Any())
         {
             _logger.LogInformation("No products found for category ID: {CategoryId}", request.CategoryId);

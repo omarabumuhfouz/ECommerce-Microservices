@@ -1,5 +1,4 @@
-﻿
-namespace ProductService.Application.Features.Categories.Commands.EditCategory;
+﻿namespace ProductService.Application.Features.Categories.Commands.EditCategory;
 
 public class EditCategoryCommandHandler : ICommandHandler<EditCategoryCommand, Unit>
 {
@@ -8,33 +7,35 @@ public class EditCategoryCommandHandler : ICommandHandler<EditCategoryCommand, U
 
     public EditCategoryCommandHandler(
         IUnitOfWork unitOfWork,
-        ILogger<EditCategoryCommandHandler> logger)
+        ILogger<EditCategoryCommandHandler> logger
+    )
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
-    async Task<Result<Unit>> IRequestHandler<EditCategoryCommand, Result<Unit>>.Handle(EditCategoryCommand request, CancellationToken cancellationToken)
+    async Task<Result<Unit>> IRequestHandler<EditCategoryCommand, Result<Unit>>.Handle(EditCategoryCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Starting update process for Category with Id: {CategoryId}", request.CategoryId);
 
         var categoryRepo = _unitOfWork.GetRepository<Category>();
-        var category = await categoryRepo.GetSingleBySpecAsync(new GetCategoryByIdSpec(request.CategoryId), cancellationToken);
+        var category = await categoryRepo.FirstOrDefaultAsync(new GetCategoryByIdSpec(request.CategoryId), ct);
 
         if (category == null) return DomainErrors.Category.NotFound(request.CategoryId);
 
-        // Check if a category with the same name already exists (excluding the current one)
-        if (await categoryRepo.IsExistsAsync(c => c.Name.Value == request.Name && c.Id != request.CategoryId, cancellationToken))
+        if (await categoryRepo.AnyAsync(c => c.Name.Value == request.Name && c.Id != request.CategoryId, ct))
                 return DomainErrors.Category.DuplicateName(request.Name);
 
-         var updatingResult = category.Edit(request.Name, request.Description);
-        if (updatingResult.IsFailure) return updatingResult.TopError;
+        return category.Edit(request.Name, request.Description)
 
-        categoryRepo.Update(category);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        .Tap(_ => categoryRepo.Update(category))
 
-        _logger.LogInformation("Category with id: {CategoryId} has been updated.", request.CategoryId);
+        .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
 
-        return Unit.Value;
+        .Tap(_ => _logger.LogInformation("Category with id: {CategoryId} has been updated.", request.CategoryId))
+
+        .TapError(error => _logger.LogError("Failed to update Category logic. Error: {ErrorMessage}", error.Message))
+
+        .Map(_ => Unit.Value);
     }
 }

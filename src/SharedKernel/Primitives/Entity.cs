@@ -1,6 +1,6 @@
 ﻿namespace SharedKernel.Primitives;
 
-public abstract record Entity : IEquatable<Entity>
+public abstract class Entity
 {
     protected Entity(Guid id) => Id = id;
 

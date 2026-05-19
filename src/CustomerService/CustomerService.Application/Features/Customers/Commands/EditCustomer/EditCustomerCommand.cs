@@ -1,4 +1,4 @@
-namespace CustomerService.Application.Customers.Commands.EditCustomer;
+namespace CustomerService.Application.Features.Customers.Commands.EditCustomer;
 
 public record EditCustomerCommand(Guid CustomerId, string FirstName, string LastName, string PhoneNumber)
  : ICommand<Unit>, IInvalidateCache

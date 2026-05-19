@@ -1,20 +1,18 @@
-using CustomerService.Api.Constants;
 using CustomerService.Api.Contracts.Address;
 using CustomerService.Api.Contracts.Customer;
-using CustomerService.Application.Addresses.Commands.DeleteAddress;
-using CustomerService.Application.Addresses.Commands.SetDefaultAddress;
 using CustomerService.Application.Addresses.DTOs;
-using CustomerService.Application.Addresses.Queries.GetAddressesByCustomer;
-using CustomerService.Application.Customers.Commands.AddCustomer;
 using CustomerService.Application.Customers.DTOs;
-using CustomerService.Application.Customers.Queries;
-using CustomerService.Application.Customers.Queries.GetAllCustomers;
+using CustomerService.Application.Features.Addresses.Commands.DeleteAddress;
+using CustomerService.Application.Features.Addresses.Commands.SetDefaultAddress;
+using CustomerService.Application.Features.Addresses.Queries.GetAddressesByCustomer;
+using CustomerService.Application.Features.Customers.Commands.AddCustomer;
+using CustomerService.Application.Features.Customers.Queries.GetCustomerById;
+using CustomerService.Application.Features.Customers.Queries.GetCustomerByUserId;
+using CustomerService.Application.Features.Customers.Queries.IsCustomerExistsById;
 using CustomerService.Application.Features.Customers.Queries.IsCustomerExistsByUserId;
-using Google.Protobuf.WellKnownTypes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using SharedKernel.Constants;
 using SharedKernel.Extensions;
 
 namespace CustomerService.Api.Endpoints;

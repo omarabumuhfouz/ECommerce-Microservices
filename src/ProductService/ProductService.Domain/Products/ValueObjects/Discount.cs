@@ -1,6 +1,6 @@
 ﻿using ProductService.Domain.Constants;
 using ProductService.Domain.Errors;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace ProductService.Domain.ValueObjects;
 
@@ -19,7 +19,7 @@ public record Discount
 
     public static Result<Discount> Create(int percentage, DateTime? endDate = null)
     {
-        if (percentage < ProductConstants.DISCOUNT_MIN || percentage > ProductConstants.DISCOUNT_MAX)
+        if (percentage < ProductConstants.DiscountMin || percentage > ProductConstants.DiscountMax)
             return DomainErrors.Discount.InvalidPercentage;
 
 

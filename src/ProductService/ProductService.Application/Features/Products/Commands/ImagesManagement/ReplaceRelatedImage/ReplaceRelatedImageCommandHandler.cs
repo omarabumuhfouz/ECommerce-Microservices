@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.ImagesManagement.ReplaceRelatedImage;
 public class ReplaceRelatedImageCommandHandler : ICommandHandler<ReplaceRelatedImageCommand, Unit>
 {

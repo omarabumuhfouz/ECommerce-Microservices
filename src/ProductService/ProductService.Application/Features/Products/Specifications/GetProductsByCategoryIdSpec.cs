@@ -1,11 +1,10 @@
-using SharedKernel.Specifications;
-
 namespace ProductService.Application.Features.Products.Specifications;
 
 public class GetProductsByCategoryIdSpec : Specification<Product>
 {
-    public GetProductsByCategoryIdSpec(Guid categoryId) : base(p => p.CategoryId == categoryId)
+    public GetProductsByCategoryIdSpec(Guid categoryId)
     {
-        AddInclude(p => p.Tags);
+        Query.Where(p => p.CategoryId == categoryId)
+        .Include(p => p.Tags);
     }
 }

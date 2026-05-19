@@ -20,11 +20,11 @@ public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, Unit>
         _logger.LogInformation("Starting deletion process for User ID: {UserId}", request.UserId);
 
         var userRepo = _unitOfWork.GetRepository<User>();
-        var user = await userRepo.GetSingleBySpecAsync(new GetUserByIdSpec(request.UserId), ct);
+        var user = await userRepo.FirstOrDefaultAsync(new GetUserByIdSpec(request.UserId), ct);
 
         if (user is null) return DomainErrors.User.NotFound(request.UserId);
 
-        userRepo.Delete(user);
+        userRepo.Remove(user);
         await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("User {UserId} deleted successfully.", request.UserId);

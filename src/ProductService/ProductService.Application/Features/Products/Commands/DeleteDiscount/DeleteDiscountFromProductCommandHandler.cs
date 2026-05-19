@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.DeleteDiscount;
 
 public class DeleteDiscountFromProductCommandHandler : ICommandHandler<DeleteDiscountFromProductCommand, Unit>

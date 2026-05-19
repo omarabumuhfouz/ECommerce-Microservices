@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.EditPrice;
 
 public class EditPriceCommandHandler : ICommandHandler<EditPriceCommand, Unit>

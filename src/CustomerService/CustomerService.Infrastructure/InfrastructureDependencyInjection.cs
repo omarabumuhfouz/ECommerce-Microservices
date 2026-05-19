@@ -1,9 +1,11 @@
 ﻿using CustomerService.Domain.Constants;
 using CustomerService.Infrastructure.Data;
+using CustomerService.Infrastructure.Interceptors;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrderService.Infrastructure.Interceptors;
 
 namespace CustomerService.Infrastructure
 {
@@ -26,15 +28,26 @@ namespace CustomerService.Infrastructure
 
         private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<CustomerDbContext>(options =>
+            services.AddSingleton<PublishDomainEventsInterceptor>();
+            services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+
+            services.AddDbContext<CustomerDbContext>((sp, options) =>
+            {
+                // Resolve the interceptor from the service provider
+                var outboxInterceptor = sp.GetRequiredService<PublishDomainEventsInterceptor>();
+                var auditableInterceptor = sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+
                 options.UseSqlServer(configuration.GetConnectionString("CustomerConnection"),
-                options => options.EnableRetryOnFailure())
-                .LogTo(Console.WriteLine, LogLevel.Information));
+                        sqlOptions => sqlOptions.EnableRetryOnFailure())
+                       .LogTo(Console.WriteLine, LogLevel.Information)
+                       // ADD THIS LINE to register the interceptor
+                       .AddInterceptors(outboxInterceptor, auditableInterceptor);
+            });
 
 
-        // 2. ADD THIS LINE TO FIX THE CRASH:
-        services.AddScoped<Microsoft.EntityFrameworkCore.DbContext>(provider => 
-                provider.GetRequiredService<CustomerDbContext>());
+            services.AddScoped<Microsoft.EntityFrameworkCore.DbContext>(provider =>
+                    provider.GetRequiredService<CustomerDbContext>());
+
 
             return services;
         }

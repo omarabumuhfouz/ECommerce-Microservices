@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProductService.Domain.Constants;
-using ProductService.Domain.ProductManagement;
+using ProductService.Domain.Products;
 
 namespace ProductService.Infrastructure.Config;
 
@@ -10,21 +10,25 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
        {
               builder.ToTable("Products");
 
-              builder.HasKey(p => p.Id);
+              builder.HasKey(p => p.Id)
+              .IsClustered(false);
 
               builder.Property(p => p.Name)
                      .IsRequired()
-                     .HasMaxLength(ProductConstants.NAME_MAX_LENGTH);
+                     .HasMaxLength(ProductConstants.NameMaxLength);
 
               builder.Property(p => p.Description)
                      .IsRequired()
-                     .HasMaxLength(ProductConstants.DESCRIPTION_MAX_LENGTH);
+                     .HasMaxLength(ProductConstants.DescriptionMaxLength);
 
-              builder.Property(p => p.StockQuantity)
-                     .IsRequired();
+              builder.HasIndex(p => p.CreatedOnUtc)
+              .IsClustered(true);
 
-              builder.Property(p => p.IsAvailable)
-                     .IsRequired();
+              builder.Property(p => p.CreatedOnUtc)
+              .IsRequired();
+
+              builder.Property(p => p.ModifiedOnUtc)
+              .IsRequired(false);
 
               builder.OwnsOne(p => p.Price, priceBuilder =>
                            {
@@ -37,6 +41,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                   .IsRequired()
                   .HasMaxLength(3);
                            });
+
+              
 
               builder.OwnsOne(p => p.Discount);
               builder.OwnsOne(p => p.MainImage);
@@ -75,6 +81,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
               builder.HasMany(p => p.Tags)
                   .WithMany(t => t.Products)
                   .UsingEntity(j => j.ToTable("ProductTags")); // Creates the join table
+
+              builder.HasQueryFilter(x => !x.IsDeleted);
 
        }
 }

@@ -1,6 +1,4 @@
-using CustomerService.Application.Addresses.Queries;
-
-namespace CustomerService.Application.Addresses.Queries.GetAddressesByCustomer;
+namespace CustomerService.Application.Features.Addresses.Queries.GetAddressesByCustomer;
 
 public class GetAddressesByCustomerQueryValidator : AbstractValidator<GetAddressesByCustomerQuery>
 {

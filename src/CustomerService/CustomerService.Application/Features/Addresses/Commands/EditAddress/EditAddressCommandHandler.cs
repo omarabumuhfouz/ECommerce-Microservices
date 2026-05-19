@@ -1,4 +1,8 @@
-﻿namespace CustomerService.Application.Addresses.Commands;
+﻿using CustomerService.Application.Features.Specifications.Customers;
+using CustomerService.Domain.Customers;
+using SharedKernel.Common;
+
+namespace CustomerService.Application.Features.Addresses.Commands.EditAddress;
 
 public class EditAddressCommandHandler : ICommandHandler<EditAddressCommand, Unit>
 {
@@ -18,33 +22,26 @@ public class EditAddressCommandHandler : ICommandHandler<EditAddressCommand, Uni
         _mapper = mapper;
     }
 
-    async Task<Result<Unit>> IRequestHandler<EditAddressCommand, Result<Unit>>.Handle(EditAddressCommand request, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Starting Updating Address : {@AddressId} For CustomerId : {@CustomerId}",
-             request.AddressId,
-            request.CustomerId);
+    async Task<Result<Unit>> IRequestHandler<EditAddressCommand, Result<Unit>>.Handle(
+    EditAddressCommand request, 
+    CancellationToken ct)
+{
+    _logger.LogInformation("Updating Address {AddressId} for Customer {CustomerId}", 
+        request.AddressId, request.CustomerId);
 
-        var customerRepository = _unitOfWork.GetRepository<Customer>();
+    return await _unitOfWork.GetRepository<Customer>()
+        .FirstOrDefaultAsync(new GetCustomerByIdSpec(request.CustomerId, true), ct)
+        .ToResult(DomainErrors.Customer.NotFound(request.CustomerId))
 
-        var customer = await customerRepository.GetSingleBySpecAsync(new GetCustomerByIdSpec(request.CustomerId, true), cancellationToken);
+        .TapError(error => _logger.LogWarning("Edit address failed: {Error}", error.Message))
 
-        if (customer is null)
-        {
-            _logger.LogWarning("Customer not found with Id : {@CustomerId}", request.CustomerId);
-            return DomainErrors.Customer.NotFound(request.CustomerId);
-        }
+        .Bind(customer => customer.UpdateAddress(request.AddressId, _mapper.Map<Address>(request)))
 
-        var result = customer.UpdateAddress(request.AddressId, _mapper.Map<Address>(request));
+        .Tap(async () => await _unitOfWork.SaveChangesAsync(ct))
 
-        if (result.IsFailure) return result.TopError;
+        .Tap(() => _logger.LogInformation("Address {AddressId} updated successfully for Customer {CustomerId}", 
+            request.AddressId, request.CustomerId))
 
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("Address Updated Successfully belong to Customer Id :{@CustomerId}, with Address Id {@AddressId}",
-                    request.CustomerId,
-                    request.AddressId);
-
-        return Unit.Value; 
-    }
+        .Map(_ => Unit.Value);
+}
 }

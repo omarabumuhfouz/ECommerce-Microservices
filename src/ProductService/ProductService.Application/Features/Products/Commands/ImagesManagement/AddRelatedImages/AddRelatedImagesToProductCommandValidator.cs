@@ -12,7 +12,7 @@ public class AddRelatedImagesToProductCommandValidator : AbstractValidator<AddRe
         RuleFor(x => x.RelatedImages)
             .NotNull()
             .NotEmpty().WithMessage("At least one image must be provided.")
-            .Must(images => images.Count <= ProductConstants.MAX_ADDED_IMAGES_AT_ONCE).WithMessage("You cannot add more than 10 images at once."); // Safety limit
+            .Must(images => images.Count <= ProductConstants.MaxAddedImagesAtOnce).WithMessage("You cannot add more than 10 images at once."); // Safety limit
 
         // Validates every item in the list using the child validator above
         RuleForEach(x => x.RelatedImages)

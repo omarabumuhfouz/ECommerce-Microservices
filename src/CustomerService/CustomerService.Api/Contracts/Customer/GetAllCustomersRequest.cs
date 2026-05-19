@@ -1,4 +1,4 @@
-using CustomerService.Application.Customers.Queries.GetAllCustomers;
+using CustomerService.Application.Features.Customers.Queries.GetCustomers;
 using SharedKernel.Common;
 
 namespace CustomerService.Api.Contracts.Customer;
@@ -12,9 +12,9 @@ public record GetAllCustomersRequest(string? FirstName,
     int PageSize
 )
 {
-    public GetAllCustomersQuery ToQuery()
+    public GetCustomersQuery ToQuery()
     {
-        return new GetAllCustomersQuery( FirstName, LastName, PhoneNumber, new PagingParams
+        return new GetCustomersQuery( FirstName, LastName, PhoneNumber, new PagingParams
         {
             PageSize = PageSize,
             Page = Page,

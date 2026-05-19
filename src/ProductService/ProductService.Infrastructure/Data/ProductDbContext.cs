@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
-using ProductService.Domain.CategoryManagement;
-using ProductService.Domain.ProductManagement;
-using ProductService.Domain.TagManagement;
+using ProductService.Domain.Categories;
+using ProductService.Domain.Products;
+using ProductService.Domain.Tags;
 using ProductService.Infrastructure.InboxMessages;
 
 namespace ProductService.Infrastructure.Data;

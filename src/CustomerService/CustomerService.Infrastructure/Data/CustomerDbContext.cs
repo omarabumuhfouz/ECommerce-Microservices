@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using CustomerService.Domain.Customers;
+using MassTransit;
 
 namespace CustomerService.Infrastructure.Data
 {

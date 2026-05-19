@@ -2,7 +2,7 @@ using CancellationService.Application.Cancellations.DTOs;
 using CancellationService.Domain.Errors;
 using Contracts.Order;
 using Grpc.Core;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace CancellationService.Infrastructure.Services;
 public  class OrderGrpcService : IOrderService

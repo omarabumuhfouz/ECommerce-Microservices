@@ -1,12 +1,13 @@
-using System.ComponentModel;
+using ProductService.Domain.Products;
 
 namespace ProductService.Application.Features.Products.Specifications;
 public class GetProductByIdSpec : Specification<Product>
 {
-    public GetProductByIdSpec(Guid id, bool withTracking = false) : base(p => p.Id == id)
+    public GetProductByIdSpec(Guid id, bool withTracking = false) 
     {
-        AddInclude(p => p.Tags);
+        Query.Where(p => p.Id == id)
+        .Include(p => p.Tags);
 
-        if (withTracking) EnableTracking();
+        if (withTracking) Query.AsTracking();
     }
 }

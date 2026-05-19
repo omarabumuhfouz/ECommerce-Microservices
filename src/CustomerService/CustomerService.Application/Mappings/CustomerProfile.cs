@@ -1,5 +1,6 @@
-﻿using CustomerService.Application.Addresses.Commands.CreateAddress;
-using CustomerService.Application.Customers.Commands.AddCustomer;
+﻿using CustomerService.Application.Features.Addresses.Commands.CreateAddress;
+using CustomerService.Application.Features.Addresses.Commands.EditAddress;
+using CustomerService.Domain.Customers;
 using AddressDto = CustomerService.Application.Addresses.DTOs.AddressDto;
 
 namespace CustomerService.Application.Mappings;

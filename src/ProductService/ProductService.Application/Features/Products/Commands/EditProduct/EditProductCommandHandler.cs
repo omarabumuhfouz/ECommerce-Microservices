@@ -1,4 +1,6 @@
-﻿namespace ProductService.Application.Features.Products.Commands.EditProduct;
+﻿using ProductService.Domain.Products;
+
+namespace ProductService.Application.Features.Products.Commands.EditProduct;
 
 public class EditProductCommandHandler : ICommandHandler<EditProductCommand, Unit>
 {

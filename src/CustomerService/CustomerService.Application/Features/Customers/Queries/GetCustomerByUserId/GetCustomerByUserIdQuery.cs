@@ -1,6 +1,4 @@
-using SharedKernel.Abstractions.Messaging;
-
-namespace CustomerService.Application.Customers.Queries;
+namespace CustomerService.Application.Features.Customers.Queries.GetCustomerByUserId;
 
 public record GetCustomerByUserIdQuery(Guid UserId) : ICachedQuery<CustomerDetailsDto>
 {

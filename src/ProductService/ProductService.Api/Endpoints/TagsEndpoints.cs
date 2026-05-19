@@ -5,6 +5,7 @@ using ProductService.Application.DTOs;
 using ProductService.Application.Features.Tags.Commands.AddTag;
 using ProductService.Application.Features.Tags.Commands.DeleteTag;
 using ProductService.Application.Features.Tags.Commands.EditTag;
+using ProductService.Application.Features.Tags.Commands.RestoreTag;
 using ProductService.Application.Features.Tags.Queries.GetTags;
 using SharedKernel.Extensions;
 
@@ -36,6 +37,15 @@ public static class TagsEndpoints
             .WithSummary("Delete an existing tag")
             .WithDescription("Removes a tag from the system based on its ID. Fails with a 409 Conflict if the tag is still associated with products.")
             .WithName("DeleteTag");
+
+        tagsApi.MapPut("/{tagId:Guid}", RestoreTag)
+                    // .RequireAuthorization(AuthConstants.Policies.AdminOnly) 
+                    .Produces(StatusCodes.Status204NoContent)
+                    .ProducesProblem(StatusCodes.Status404NotFound)
+                    .ProducesProblem(StatusCodes.Status500InternalServerError)
+                    .WithSummary("Restore Deleted  tag")
+                    .WithName("RestoreTag");
+
 
         tagsApi.MapPut("/{tagId:Guid}", EditTag)
             .Accepts<UpdateTagRequest>("application/json")
@@ -80,6 +90,15 @@ public static class TagsEndpoints
             onValue: value => Results.NoContent(),
             onError: error => error.ToProblem()
         );
+    }
+
+private static async Task<IResult> RestoreTag(
+        [FromRoute] Guid tagId,
+        [FromServices] ISender sender
+    )
+    {
+        var result = await sender.Send(new RestoreTagCommand(tagId));
+        return result.Match(_ => Results.NoContent(), e => e.ToProblem());
     }
 
     private static async Task<IResult> EditTag(

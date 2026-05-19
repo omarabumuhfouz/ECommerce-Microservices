@@ -1,4 +1,5 @@
 ﻿using ProductService.Application.Features.Products.DTOs;
+using ProductService.Domain.Products;
 
 namespace ProductService.Application.Mappings;
 

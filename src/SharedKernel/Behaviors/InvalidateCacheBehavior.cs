@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using SharedKernel.Abstractions.Messaging;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace SharedKernel.Behaviors;
 

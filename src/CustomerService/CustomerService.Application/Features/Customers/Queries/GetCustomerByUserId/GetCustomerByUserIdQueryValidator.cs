@@ -1,7 +1,4 @@
-using CustomerService.Application.Customers.Queries;
-using CustomerService.Application.Extensions;
-
-namespace CustomerService.Application.Customers.Queries.GetCustomerByUserId;
+namespace CustomerService.Application.Features.Customers.Queries.GetCustomerByUserId;
 
 public class GetCustomerByUserIdQueryValidator : AbstractValidator<GetCustomerByUserIdQuery>
 {

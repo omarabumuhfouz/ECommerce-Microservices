@@ -1,4 +1,4 @@
-﻿namespace CustomerService.Application.Addresses.Commands;
+﻿namespace CustomerService.Application.Features.Addresses.Commands.EditAddress;
 
 public sealed record EditAddressCommand(
     Guid CustomerId,

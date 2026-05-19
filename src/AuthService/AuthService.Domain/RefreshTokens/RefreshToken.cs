@@ -2,7 +2,7 @@ using AuthService.Domain.Constants;
 
 namespace AuthService.Domain.RefreshTokens; 
 
-public record RefreshToken : AggregateRoot 
+public class RefreshToken : AggregateRoot 
 {
     private RefreshToken() { }
 

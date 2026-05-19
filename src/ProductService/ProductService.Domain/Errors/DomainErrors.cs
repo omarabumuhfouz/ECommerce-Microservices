@@ -1,6 +1,5 @@
 ﻿using ProductService.Domain.Constants;
-using SharedKernel.Shared; // Assuming Error lives here
-using SharedKernel.Primitives.Result; // Or wherever Error lives
+using SharedKernel.Primitives.Results;
 
 namespace ProductService.Domain.Errors;
 
@@ -17,8 +16,8 @@ public static class DomainErrors
             $"Product with IDs [{string.Join(", ", ids)}] were not found."
         );
 
-        public static readonly Error NameRequired = Error.Validation(
-            ErrorCodes.Product.NameRequired,
+        public static readonly Error EmptyName = Error.Validation(
+            ErrorCodes.Product.EmptyName,
             "The product name is required.");
 
         public static readonly Error DescriptionRequired = Error.Validation(
@@ -29,18 +28,16 @@ public static class DomainErrors
             ErrorCodes.Product.QuantityMustBePositive,
             "The product quantity must be a positive number.");
 
-        public static readonly Error InsufficientStock = Error.Conflict(
-            ErrorCodes.Product.InsufficientStock,
-            "The product does not have sufficient stock for the requested operation.");
-
+        
         public static readonly Func<string, Error> DuplicateName = name => Error.Conflict(
             ErrorCodes.Product.DuplicateName,
             $"A product with the name '{name}' already exists.");
 
-        public static readonly Func<string, Error> InvalidStockOperation = operation => Error.Validation(
-            ErrorCodes.Product.InvalidStockOperation,
-            $"Invalid stock operation: '{operation}'. Must be 'increase' or 'decrease'."
-        );
+        public static readonly Error InvalidPrice = Error.Validation(
+            ErrorCodes.Product.InvalidPrice,
+            "The product price is invalid.");
+
+
     }
 
     public static class Category
@@ -59,7 +56,7 @@ public static class DomainErrors
 
         public static readonly Error NameTooLong = Error.Validation(
             ErrorCodes.Category.NameTooLong,
-            $"Category name is too long must be less than {CategoryConstants.NAME_MAX_LENGTH}");
+            $"Category name is too long must be less than {CategoryConstants.NameMaxLength}");
 
         public static readonly Func<string, Error> DuplicateName = name => Error.Conflict(
             ErrorCodes.Category.DuplicateName,
@@ -110,7 +107,7 @@ public static class DomainErrors
     {
         public static readonly Error InvalidPercentage = Error.Validation(
             ErrorCodes.Discount.InvalidPercentage,
-            $"The discount percentage must be between {ProductConstants.DISCOUNT_MIN} and {ProductConstants.DISCOUNT_MAX}.");
+            $"The discount percentage must be between {ProductConstants.DiscountMin} and {ProductConstants.DiscountMax}.");
 
         public static readonly Error InvalidEndDate = Error.Validation(
             ErrorCodes.Discount.InvalidEndDate,
@@ -138,11 +135,11 @@ public static class DomainErrors
 
         public static readonly Error NameTooLong = Error.Validation(
             ErrorCodes.Feature.NameTooLong,
-            $"Feature name is too long must be less than {ProductConstants.FEATURE_NAME_MAX_LENGTH} characters.");
+            $"Feature name is too long must be less than {ProductConstants.FeatureNameMaxLength} characters.");
 
         public static readonly Error ValueTooLong = Error.Validation(
             ErrorCodes.Feature.ValueTooLong,
-            $"Feature value is too long must be less than {ProductConstants.FEATURE_VALUE_MAX_LENGTH} characters.");
+            $"Feature value is too long must be less than {ProductConstants.FeatureValueMaxLength} characters.");
 
         public static readonly Func<string, Error> AlreadyExists = name => Error.Conflict(
             ErrorCodes.Feature.AlreadyExists,

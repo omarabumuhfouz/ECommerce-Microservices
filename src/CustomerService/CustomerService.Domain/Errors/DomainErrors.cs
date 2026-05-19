@@ -1,7 +1,6 @@
 ﻿
 using CustomerService.Domain.Constants;
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace CustomerService.Domain.Errors;
 

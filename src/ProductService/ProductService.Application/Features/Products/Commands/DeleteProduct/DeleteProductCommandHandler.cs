@@ -1,4 +1,6 @@
-﻿namespace ProductService.Application.Features.Products.Commands.DeleteProduct;
+﻿using ProductService.Domain.Products;
+
+namespace ProductService.Application.Features.Products.Commands.DeleteProduct;
 
 public class DeleteProductCommandHandler : ICommandHandler<DeleteProductCommand, Unit>
 {
@@ -14,21 +16,32 @@ public class DeleteProductCommandHandler : ICommandHandler<DeleteProductCommand,
         _logger = logger;
     }
 
-    async Task<Result<Unit>> IRequestHandler<DeleteProductCommand, Result<Unit>>.Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+    async Task<Result<Unit>> IRequestHandler<DeleteProductCommand, Result<Unit>>.Handle(DeleteProductCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Processing deletion for product: {ProductId}", request.ProductId);
+
         var productRepo = _unitOfWork.GetRepository<Product>();
 
-        var product = await productRepo.GetSingleBySpecAsync(new GetProductByIdSpec(request.ProductId, true), cancellationToken);
+        return await productRepo
 
-        if (product is null) return DomainErrors.Product.NotFound(request.ProductId);
+        .FirstOrDefaultAsync(new GetProductByIdSpec(request.ProductId), ct)
 
-        product.EditStatus(false);
+        .ToResult(DomainErrors.Product.NotFound(request.ProductId))
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        .Bind(product => product.Delete().Map(() => product))
 
-        _logger.LogInformation("Product with ID: {ProductId} has been soft-deleted.", request.ProductId);
+        .Tap(product => productRepo.Update(product))
 
-        return Unit.Value;
+        .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
+
+        .Tap(product => _logger.LogInformation(
+                "Product '{ProductName}' with Id: {ProductId} was successfully deleted.", 
+                product.Name, product.Id))
+                
+        .TapError(error => _logger.LogError(
+                "Failed to delete Product with Id: {ProductId}. Error Code: {ErrorCode}, Message: {ErrorMessage}", 
+                request.ProductId, error.Code, error.Message))
+
+        .Map(_ => Unit.Value);
     }
 }

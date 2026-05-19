@@ -1,7 +1,7 @@
 using Contracts.Customer;
-using CustomerService.Application.Customers.Commands.AddCustomer;
-using CustomerService.Application.Customers.Commands.EditCustomer;
-using CustomerService.Application.Customers.Queries;
+using CustomerService.Application.Features.Customers.Commands.AddCustomer;
+using CustomerService.Application.Features.Customers.Commands.EditCustomer;
+using CustomerService.Application.Features.Customers.Queries.GetCustomerById;
 using Grpc.Core;
 using MediatR;
 using SharedKernel.Extensions;

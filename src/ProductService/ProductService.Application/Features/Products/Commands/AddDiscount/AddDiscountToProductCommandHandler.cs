@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.AddDiscount;
 
 public class AddDiscountToProductCommandHandler : ICommandHandler<AddDiscountToProductCommand, Unit>

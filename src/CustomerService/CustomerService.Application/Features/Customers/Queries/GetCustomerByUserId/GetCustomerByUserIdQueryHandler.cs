@@ -1,4 +1,7 @@
-namespace CustomerService.Application.Customers.Queries;
+using CustomerService.Domain.Customers;
+using SharedKernel.Common;
+
+namespace CustomerService.Application.Features.Customers.Queries.GetCustomerByUserId;
 
 public class GetCustomerByUserIdQueryHandler : IQueryHandler<GetCustomerByUserIdQuery, CustomerDetailsDto>
 {
@@ -18,14 +21,22 @@ public class GetCustomerByUserIdQueryHandler : IQueryHandler<GetCustomerByUserId
         _logger = logger;
     }
 
-    async Task<Result<CustomerDetailsDto>> IRequestHandler<GetCustomerByUserIdQuery, Result<CustomerDetailsDto>>.Handle(GetCustomerByUserIdQuery request, CancellationToken cancellationToken)
-    {
-        var customerRepository = _unitOfWork.GetRepository<Customer>();
-        var customer = await customerRepository.GetSingleBySpecAsync(new GetCustomerByUserIdSpec(request.UserId), cancellationToken);
+    async Task<Result<CustomerDetailsDto>> IRequestHandler<GetCustomerByUserIdQuery, Result<CustomerDetailsDto>>.Handle(
+    GetCustomerByUserIdQuery request, 
+    CancellationToken ct)
+{
+    _logger.LogInformation("Querying Customer by UserId: {UserId}", request.UserId);
 
-        if (customer is not null) return _mapper.Map<CustomerDetailsDto>(customer);
-
-        _logger.LogWarning("Customer Not found with UserId : {@UserId}", request.UserId);
-        return DomainErrors.Customer.NotFoundByUser(request.UserId);
-    }
+    return await _unitOfWork.GetRepository<Customer>()
+        .FirstOrDefaultAsync(new GetCustomerByUserIdSpec(request.UserId), ct)
+        .ToResult(DomainErrors.Customer.NotFoundByUser(request.UserId))
+        
+        .TapError(error => _logger.LogWarning("Customer lookup failed for UserId: {UserId}. Error: {@Error}", 
+            request.UserId, error))
+            
+        .Tap(customer => _logger.LogInformation("Successfully found Customer {Id} for User {UserId}", 
+            customer.Id, request.UserId))
+            
+        .Map(customer => _mapper.Map<CustomerDetailsDto>(customer));
+}
 }

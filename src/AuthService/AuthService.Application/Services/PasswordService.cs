@@ -1,4 +1,3 @@
-
 using AuthService.Application.Interfaces;
 
 public class PasswordService : IPasswordService

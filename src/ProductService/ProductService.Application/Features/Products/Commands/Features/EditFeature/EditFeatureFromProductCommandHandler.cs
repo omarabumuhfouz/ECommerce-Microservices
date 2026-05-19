@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.Features.EditFeature;
 
 public class EditFeatureFromProductCommandHandler : ICommandHandler<EditFeatureFromProductCommand, Unit>

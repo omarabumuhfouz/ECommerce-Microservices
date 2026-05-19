@@ -1,4 +1,6 @@
-﻿namespace CancellationService.Application.Services;
+﻿using SharedKernel.Primitives.Results;
+
+namespace CancellationService.Application.Services;
 
 public interface IOrderService
 {

@@ -1,4 +1,6 @@
-﻿namespace OrderService.Application.Services;
+﻿using SharedKernel.Primitives.Results;
+
+namespace OrderService.Application.Services;
 
 public interface ICustomerService
 {

@@ -31,12 +31,12 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, TokenResponseDt
         _logger.LogInformation("Processing login attempt for Email: {Email}", request.Email);
 
         var clientRepo = _unitOfWork.GetRepository<Client>();
-        var client = await clientRepo.GetSingleBySpecAsync(new GetClientByPublicIdSpec(request.ClientId), ct);
+        var client = await clientRepo.FirstOrDefaultAsync(new GetClientByPublicIdSpec(request.ClientId), ct);
 
         if (client is null) return DomainErrors.Client.NotFound;
 
         var userRepo = _unitOfWork.GetRepository<User>();
-        var user = await userRepo.GetSingleBySpecAsync(new GetUserByEmailSpec(request.Email), ct);
+        var user = await userRepo.FirstOrDefaultAsync(new GetUserByEmailSpec(request.Email), ct);
 
         if (user is null) return DomainErrors.User.InvalidCredentials;
 

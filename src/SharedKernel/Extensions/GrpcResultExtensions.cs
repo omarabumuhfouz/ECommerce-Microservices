@@ -1,6 +1,5 @@
 using Grpc.Core;
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared; // Your Result namespace
+using SharedKernel.Primitives.Results;
 namespace SharedKernel.Extensions;
 
 public static class GrpcResultExtensions

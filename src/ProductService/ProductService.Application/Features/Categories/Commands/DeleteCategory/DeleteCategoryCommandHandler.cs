@@ -13,33 +13,54 @@ public class DeleteCategoryCommandHandler : ICommandHandler<DeleteCategoryComman
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
-    
-    async Task<Result<Unit>> IRequestHandler<DeleteCategoryCommand, Result<Unit>>.Handle(DeleteCategoryCommand request, CancellationToken ct)
+
+    public async Task<Result<Unit>> Handle(DeleteCategoryCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Starting deletion process for Category with Id: {CategoryId}", request.CategoryId);
 
         var categoryRepository = _unitOfWork.GetRepository<Category>();
-        var category = await categoryRepository.GetSingleBySpecAsync(new GetCategoryByIdSpec(request.CategoryId), ct);
+        var productRepository = _unitOfWork.GetRepository<Product>();
 
-        if (category is null) return DomainErrors.Category.NotFound(request.CategoryId);
+        return await categoryRepository
+            // 1. Fetch
+            .FirstOrDefaultAsync(new GetCategoryByIdSpec(request.CategoryId), ct)
 
-        if (category.IsActive is false) return Unit.Value;
+            // 2. Null Check -> Result
+            .ToResult(DomainErrors.Category.NotFound(request.CategoryId))
 
-        // Check if category has associated products
-        
-        if (await _unitOfWork.GetRepository<Product>().IsExistsAsync(p => p.CategoryId == request.CategoryId, ct))
-            return DomainErrors.Category.HasProducts(request.CategoryId);
+            // 3. Async Business Rules & Checks (Idempotency & Product Association)
+            .Bind(async category =>
+            {
+                // Idempotency: If already deleted, skip the rest and return success
+                if (category.IsDeleted) return Result.Success(category);
 
-         category.EditStatus(false);
+                // Check if products are associated
+                bool hasProducts = await productRepository.AnyAsync(p => p.CategoryId == request.CategoryId, ct);
+                if (hasProducts) return Result.Failure<Category>(DomainErrors.Category.HasProducts(request.CategoryId));
 
-        categoryRepository.Update(category);
-        await _unitOfWork.SaveChangesAsync(ct);
+                return Result.Success(category);
+            })
 
-        _logger.LogInformation(
-                    "Category '{CategoryName}' with Id: {CategoryId} was deactivated successfully.",
-                    category.Name,
-                    category.Id);
+            // 4. Execute Domain Logic
+            // category.Delete() returns a Result. We map it back to the 'category' object 
+            // so we can pass it down the railway for the success logger to read its Name.
+            .Bind(category => category.Delete().Map(() => category))
 
-        return Unit.Value;
+            // 5. Persistence 
+            .Tap(category => categoryRepository.Update(category))
+            .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
+
+            // 6. Success Logging (Only hits if everything above succeeded)
+            .Tap(category => _logger.LogInformation(
+                "Category '{CategoryName}' with Id: {CategoryId} was deactivated successfully.",
+                category.Name, category.Id))
+
+            // 7. Error Logging (Catches NotFound, HasProducts, or Domain Logic failures)
+            .TapError(error => _logger.LogError(
+                "Failed to delete Category with Id: {CategoryId}. Error Code: {ErrorCode}, Message: {ErrorMessage}",
+                request.CategoryId, error.Code, error.Message))
+
+            // 8. Map to MediatR's expected return type
+            .Map(_ => Unit.Value);
     }
 }

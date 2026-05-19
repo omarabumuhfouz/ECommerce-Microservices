@@ -1,4 +1,8 @@
-namespace CustomerService.Application.Addresses.Commands.SetDefaultAddress;  
+using CustomerService.Application.Features.Specifications.Customers;
+using CustomerService.Domain.Customers;
+using SharedKernel.Common;
+
+namespace CustomerService.Application.Features.Addresses.Commands.SetDefaultAddress;  
 
 public sealed class SetDefaultAddressCommandHandler : ICommandHandler<SetDefaultAddressCommand, Unit>
 {
@@ -15,31 +19,26 @@ public sealed class SetDefaultAddressCommandHandler : ICommandHandler<SetDefault
     }
 
 
-    async Task<Result<Unit>> IRequestHandler<SetDefaultAddressCommand, Result<Unit>>.Handle(SetDefaultAddressCommand request, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Starting Set Default Address : {@AddressId} for Customer : {@CustomerId}",
-                        request.AddressId,
-                        request.CustomerId);
+    async Task<Result<Unit>> IRequestHandler<SetDefaultAddressCommand, Result<Unit>>.Handle(
+    SetDefaultAddressCommand request, 
+    CancellationToken cancellationToken)
+{
+    _logger.LogInformation("Setting default address {AddressId} for Customer {CustomerId}", 
+        request.AddressId, request.CustomerId);
 
-        var customerRepository = _unitOfWork.GetRepository<Customer>();
-        var customer = await customerRepository.GetSingleBySpecAsync(new GetCustomerByIdSpec(request.CustomerId, true), cancellationToken);
+    return await _unitOfWork.GetRepository<Customer>()
+        .FirstOrDefaultAsync(new GetCustomerByIdSpec(request.CustomerId, true), cancellationToken)
+        .ToResult(DomainErrors.Customer.NotFound(request.CustomerId))
 
-        if (customer is null)
-        {
-            _logger.LogWarning("Customer not found with Id {@CustomerId}", request.CustomerId);
-            return DomainErrors.Customer.NotFound(request.CustomerId);
-        }
+        .TapError(error => _logger.LogWarning("Set default address failed: {Error}", error.Message))
 
-        customer.SetDefaultAddress(request.AddressId);
+        .Bind(customer => customer.SetDefaultAddress(request.AddressId))
 
-        customerRepository.Update(customer);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        .Tap(async () => await _unitOfWork.SaveChangesAsync(cancellationToken))
 
-        _logger.LogInformation(
-        "Set Defualt Address Successfully for Customer : {@CustomerId}, with Address : {@AddressId}",
-        request.CustomerId,
-        request.AddressId);
+        .Tap(() => _logger.LogInformation("Successfully set default address {AddressId} for Customer {CustomerId}", 
+            request.AddressId, request.CustomerId))
 
-        return Unit.Value;
-    }
+        .Map(_ => Unit.Value);
+}
 }

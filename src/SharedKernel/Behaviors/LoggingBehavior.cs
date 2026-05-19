@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 using System.Diagnostics;
 
 namespace SharedKernel.Behaviors;

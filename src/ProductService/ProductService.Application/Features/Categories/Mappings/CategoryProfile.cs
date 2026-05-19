@@ -1,4 +1,5 @@
 ﻿using ProductService.Application.Features.Categories.DTOs;
+using ProductService.Domain.Categories;
 
 namespace ProductService.Application.Mappings;
 public class CategoryProfile : Profile

@@ -1,3 +1,5 @@
+using ProductService.Domain.Products;
+
 namespace ProductService.Application.Features.Products.Commands.ImagesManagement.DeleteRelatedImage;
 
 public class DeleteRelatedImageFromProductCommandHandler : ICommandHandler<DeleteRelatedImageFromProductCommand, Unit>

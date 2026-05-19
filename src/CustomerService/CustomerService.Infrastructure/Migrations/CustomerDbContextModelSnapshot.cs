@@ -22,7 +22,7 @@ namespace CustomerService.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CustomerService.Domain.Entities.Address", b =>
+            modelBuilder.Entity("CustomerService.Domain.Customers.Address", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -65,23 +65,34 @@ namespace CustomerService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Addresses", (string)null);
                 });
 
-            modelBuilder.Entity("CustomerService.Domain.Entities.Customer", b =>
+            modelBuilder.Entity("CustomerService.Domain.Customers.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("CreatedOnUtc");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("CreatedOnUtc"));
 
                     b.ToTable("Customers", (string)null);
                 });
@@ -256,9 +267,9 @@ namespace CustomerService.Infrastructure.Migrations
                     b.ToTable("OutboxState");
                 });
 
-            modelBuilder.Entity("CustomerService.Domain.Entities.Address", b =>
+            modelBuilder.Entity("CustomerService.Domain.Customers.Address", b =>
                 {
-                    b.HasOne("CustomerService.Domain.Entities.Customer", "Customer")
+                    b.HasOne("CustomerService.Domain.Customers.Customer", "Customer")
                         .WithMany("Addresses")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -267,9 +278,9 @@ namespace CustomerService.Infrastructure.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("CustomerService.Domain.Entities.Customer", b =>
+            modelBuilder.Entity("CustomerService.Domain.Customers.Customer", b =>
                 {
-                    b.OwnsOne("CustomerService.Domain.ValueObjects.FullName", "FullName", b1 =>
+                    b.OwnsOne("CustomerService.Domain.Customers.FullName", "FullName", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uniqueidentifier");
@@ -294,7 +305,7 @@ namespace CustomerService.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
-                    b.OwnsOne("CustomerService.Domain.ValueObjects.PhoneNumber", "PhoneNumber", b1 =>
+                    b.OwnsOne("CustomerService.Domain.Customers.PhoneNumber", "PhoneNumber", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uniqueidentifier");
@@ -332,7 +343,7 @@ namespace CustomerService.Infrastructure.Migrations
                         .HasPrincipalKey("MessageId", "ConsumerId");
                 });
 
-            modelBuilder.Entity("CustomerService.Domain.Entities.Customer", b =>
+            modelBuilder.Entity("CustomerService.Domain.Customers.Customer", b =>
                 {
                     b.Navigation("Addresses");
                 });

@@ -4,12 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MassTransit;
 using AuthService.Infrastructure.Data;
 using AuthService.Infrastructure.Identity;
-using AuthService.Application.Interfaces;
 using AuthService.Infrastructure.Services;
 using AuthService.Infrastructure.Backgrounds;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Hybrid;
 using AuthService.Domain.Constants;
+using AuthService.Application.Interfaces;
 
 namespace AuthService.Infrastructure;
 

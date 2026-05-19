@@ -1,4 +1,8 @@
-namespace CustomerService.Application.Customers.Commands.EditCustomer;
+using CustomerService.Application.Features.Specifications.Customers;
+using CustomerService.Domain.Customers;
+using SharedKernel.Common;
+
+namespace CustomerService.Application.Features.Customers.Commands.EditCustomer;
 
 public class EditCustomerCommandHandler : ICommandHandler<EditCustomerCommand, Unit>
 {
@@ -14,20 +18,21 @@ public class EditCustomerCommandHandler : ICommandHandler<EditCustomerCommand, U
         _logger = logger;
     }
 
-    async Task<Result<Unit>> IRequestHandler<EditCustomerCommand, Result<Unit>>.Handle(EditCustomerCommand request, CancellationToken cancellationToken)
-    {
-        var customerRepository = _unitOfWork.GetRepository<Domain.Entities.Customer>();
-        var customer = await customerRepository.GetSingleBySpecAsync(new GetCustomerByIdSpec(request.CustomerId), cancellationToken);
+    async Task<Result<Unit>> IRequestHandler<EditCustomerCommand, Result<Unit>>.Handle(EditCustomerCommand request, CancellationToken ct)
+{
+    _logger.LogInformation("Beginning update for Customer: {CustomerId}. New Data: {@Request}", 
+        request.CustomerId, new { request.FirstName, request.LastName });
 
-        if (customer is null) return DomainErrors.Customer.NotFound(request.CustomerId);
+    var customerRepo = _unitOfWork.GetRepository<Customer>();
 
-       customer = customer.Edit(request.FirstName, request.LastName, request.PhoneNumber).Value;
-
-        customerRepository.Update(customer);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("Customer Updated Successfully with Id : Customer Id : {@CustomerId}", customer.Id);
-
-        return Unit.Value;
-    }
+    return await customerRepo.FirstOrDefaultAsync(new GetCustomerByIdSpec(request.CustomerId), ct)
+        .ToResult(DomainErrors.Customer.NotFound(request.CustomerId))
+        .Bind(customer => customer.Update(request.FirstName, request.LastName, request.PhoneNumber)
+            .Map(_ => customer)) 
+        .Tap(async _ => await _unitOfWork.SaveChangesAsync(ct))
+        .Tap(customer => _logger.LogInformation("Successfully updated Customer {CustomerId}", customer.Id))
+        .TapError(error => _logger.LogWarning("Update failed for Customer {CustomerId}. Error: {@Error}", 
+            request.CustomerId, error))
+        .Map(_ => Unit.Value);
+}
 }

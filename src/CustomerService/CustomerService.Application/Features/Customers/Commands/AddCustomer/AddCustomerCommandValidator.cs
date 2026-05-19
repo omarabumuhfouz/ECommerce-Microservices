@@ -1,5 +1,4 @@
-
-namespace CustomerService.Application.Customers.Commands.AddCustomer;
+namespace CustomerService.Application.Features.Customers.Commands.AddCustomer;
 
 public class AddCustomerCommandValidator : AbstractValidator<AddCustomerCommand>
 {

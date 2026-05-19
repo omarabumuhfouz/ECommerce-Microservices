@@ -1,4 +1,5 @@
 ﻿using CustomerService.Domain.Constants;
+using CustomerService.Domain.Customers;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CustomerService.Infrastructure.Data.Config;
@@ -9,7 +10,8 @@ public sealed class AddressConfiguration : IEntityTypeConfiguration<Address>
     {
         builder.ToTable("Addresses");
 
-        builder.HasKey(a => a.Id);
+        builder.HasKey(a => a.Id)
+        .IsClustered(false);
 
         builder.Property(a => a.Id)
             .ValueGeneratedNever();

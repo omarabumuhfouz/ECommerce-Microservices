@@ -1,6 +1,3 @@
-using SharedKernel.Shared;
-using OrderService.Domain.Errors;
-
 namespace OrderService.Domain.Orders.Enums;
 
 public static class OrderStateMachine

@@ -1,9 +1,10 @@
 using AuthService.Domain.Extensions;
 using AuthService.Domain.Helpers;
+using SharedKernel.Primitives.Results;
 
 namespace AuthService.Domain.Users;
 
-public record User : AggregateRoot
+public class User : AggregateRoot
 {
     private User() { }
 

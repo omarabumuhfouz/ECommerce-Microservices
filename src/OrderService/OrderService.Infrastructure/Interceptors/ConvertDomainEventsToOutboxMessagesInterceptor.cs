@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
 using OrderService.Infrastructure.Outbox;
-using SharedKernel.Primitives.Result;
+using SharedKernel.Primitives.Results;
 
 namespace OrderService.Infrastructure.Interceptors;
 
