@@ -1,5 +1,4 @@
 using AuthService.Application.Features.RefreshTokens.DTOs;
-using SharedKernel.Abstractions.Messaging;
 
 namespace AuthService.Application.Features.RefreshTokens.Refresh;
 
