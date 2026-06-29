@@ -1,0 +1,143 @@
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <h2>Admin Panel</h2>
+    </div>
+    
+    <nav class="admin-nav">
+      <button 
+        (click)="setTab('dashboard')" 
+        [class.active]="activeTab === 'dashboard'"
+        class="nav-btn">
+        📊 Dashboard
+      </button>
+      <button 
+        (click)="setTab('products')" 
+        [class.active]="activeTab === 'products'"
+        class="nav-btn">
+        🛍️ Products
+      </button>
+      <button 
+        (click)="setTab('inventory')" 
+        [class.active]="activeTab === 'inventory'"
+        class="nav-btn">
+        📦 Inventory
+      </button>
+      <button 
+        (click)="setTab('orders')" 
+        [class.active]="activeTab === 'orders'"
+        class="nav-btn">
+        📦 Orders
+      </button>
+      <button 
+        (click)="setTab('categories')" 
+        [class.active]="activeTab === 'categories'"
+        class="nav-btn">
+        📂 Categories
+      </button>
+      <button 
+        (click)="setTab('users')" 
+        [class.active]="activeTab === 'users'"
+        class="nav-btn">
+        👥 Users
+      </button>
+    </nav>
+    
+    <div class="admin-user">
+      <img [src]="authService.userAvatar()" alt="Admin Avatar" class="avatar">
+      <div class="user-info">
+        <span class="user-name">{{ authService.userName() }}</span>
+        <span class="user-role">Administrator</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1>{{ activeTab | titlecase }}</h1>
+      @if (activeTab === 'products') {
+        <button class="action-btn">+ Add Product</button>
+      }
+    </header>
+
+    <div class="admin-content">
+      @if (activeTab === 'dashboard') {
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          @for (stat of stats; track stat.label) {
+            <div class="stat-card">
+              <h3>{{ stat.label }}</h3>
+              <div class="stat-value">{{ stat.value }}</div>
+              <div class="stat-trend" [class.positive]="stat.isPositive" [class.negative]="!stat.isPositive">
+                {{ stat.trend }} from last month
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Recent Orders</h2>
+            <a href="#" (click)="$event.preventDefault(); setTab('orders')">View All</a>
+          </div>
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of recentOrders(); track order.id) {
+                  <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.customerName }}</td>
+                    <td>{{ order.createdAt | date:'mediumDate' }}</td>
+                    <td>{{ order.total | currency }}</td>
+                    <td>
+                      <span class="status-badge" [class]="'status-' + order.status.toLowerCase()">
+                        {{ order.status }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+      
+      @if (activeTab === 'products') {
+        <div class="panel">
+          <div class="panel-header"><h2>Products Directory</h2></div>
+          <div class="panel-body">
+            <p>Product management interface coming soon. You will be able to add, edit, and remove products from the catalog here.</p>
+          </div>
+        </div>
+      }
+
+      @if (activeTab === 'inventory') {
+        <app-inventory-management></app-inventory-management>
+      }
+
+      @if (activeTab === 'categories') {
+        <app-category-management></app-category-management>
+      }
+
+      @if (activeTab === 'orders') {
+        <app-order-management></app-order-management>
+      }
+
+      @if (activeTab === 'users') {
+        <app-user-management></app-user-management>
+      }
+    </div>
+  </main>
+</div>

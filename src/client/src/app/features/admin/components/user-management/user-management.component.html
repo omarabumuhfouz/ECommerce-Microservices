@@ -1,0 +1,147 @@
+<div class="user-layout">
+  
+  <div class="user-header">
+    <h2>User Administration</h2>
+  </div>
+
+  <!-- Dashboard Overview Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon box-icon">👥</div>
+      <div class="stat-details">
+        <span class="stat-label">Total Users</span>
+        <span class="stat-value">{{ totalUsers() }}</span>
+      </div>
+    </div>
+    
+    <div class="stat-card success">
+      <div class="stat-icon success-icon">✨</div>
+      <div class="stat-details">
+        <span class="stat-label">New This Week</span>
+        <span class="stat-value">{{ newUsersThisWeek() }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card warning">
+      <div class="stat-icon alert-icon">🛡️</div>
+      <div class="stat-details">
+        <span class="stat-label">Admin Accounts</span>
+        <span class="stat-value">{{ adminUsers() }}</span>
+      </div>
+    </div>
+  </div>
+
+
+    <!-- User Directory Table -->
+    <div class="panel table-panel">
+      <div class="panel-header">
+        <div class="header-left">
+          <h3>User Directory</h3>
+          @if (selectedUserIds().size > 0) {
+            <span class="selection-count">
+              {{ selectedUserIds().size }} user(s) selected
+            </span>
+          }
+        </div>
+        <div class="header-actions">
+          <button class="btn-compose" [disabled]="selectedUserIds().size === 0" (click)="openEmailModal()">
+            <span class="icon">✉️</span> Compose Email
+          </button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th class="checkbox-col">
+                <input type="checkbox" 
+                       [checked]="allSelected" 
+                       [indeterminate]="someSelected"
+                       (change)="toggleAll($event)"
+                       class="custom-checkbox">
+              </th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Joined Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users(); track user.id) {
+              <tr [class.selected]="isSelected(user.id)">
+                <td class="checkbox-col">
+                  <input type="checkbox" 
+                         [checked]="isSelected(user.id)" 
+                         (change)="toggleUser(user.id, $event)"
+                         class="custom-checkbox">
+                </td>
+                <td>
+                  <div class="user-cell">
+                    <img [src]="user.avatar" [alt]="user.name" class="user-avatar">
+                    <div class="user-info">
+                      <span class="user-name">{{ user.name }}</span>
+                      <span class="user-email">{{ user.email }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="role-badge" [class.admin]="user.role === 'admin'">
+                    {{ user.role | titlecase }}
+                  </span>
+                </td>
+                <td>
+                  <span class="date-text">{{ user.createdAt | date:'mediumDate' }}</span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty-state">No users found.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Email Composer Modal -->
+    @if (isEmailModalOpen()) {
+      <div class="modal-backdrop" (click)="closeEmailModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="panel email-panel">
+            <div class="panel-header">
+              <div class="header-left">
+                <h3>Compose Email</h3>
+                <span class="email-badge">Sending to {{ selectedUserIds().size }} recipient(s)</span>
+              </div>
+              <button class="btn-close" (click)="closeEmailModal()">×</button>
+            </div>
+            <div class="panel-body">
+              <form [formGroup]="emailForm" (ngSubmit)="sendBulkEmail()" class="email-form">
+                <div class="form-group">
+                  <label for="subject">Subject</label>
+                  <input type="text" id="subject" formControlName="subject" class="form-input" placeholder="e.g. Important Account Update">
+                </div>
+                
+                <div class="form-group">
+                  <label for="message">Message Body</label>
+                  <textarea id="message" formControlName="message" class="form-input" rows="8" placeholder="Type your message here..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn-cancel" (click)="closeEmailModal()" [disabled]="isSending()">Cancel</button>
+                  <button type="submit" class="btn-submit" [disabled]="emailForm.invalid || isSending()">
+                    @if (isSending()) {
+                      <span class="spinner"></span> Sending...
+                    } @else {
+                      <span class="icon">📤</span> Send Email
+                    }
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+</div>

@@ -1,0 +1,73 @@
+@if (currentCategory(); as cat) {
+  <div class="category-page">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/" class="bc-link">Home</a>
+      @for (crumb of breadcrumb(); track crumb.id; let last = $last) {
+        <span class="bc-sep">›</span>
+        @if (!last) {
+          <a [routerLink]="['/category', crumb.slug]" class="bc-link">{{ crumb.name }}</a>
+        } @else {
+          <span class="bc-current">{{ crumb.name }}</span>
+        }
+      }
+    </nav>
+
+    <!-- Category Header -->
+    <header class="cat-header">
+      <div class="cat-header__icon">{{ cat.icon }}</div>
+      <div>
+        <h1 class="cat-header__title">{{ cat.name }}</h1>
+        @if (cat.description) { <p class="cat-header__desc">{{ cat.description }}</p> }
+        <p class="cat-header__count">{{ cat.productCount }} products</p>
+      </div>
+    </header>
+
+    <!-- Sub-categories -->
+    @if (subCategories().length > 0) {
+      <section class="sub-section" aria-labelledby="sub-heading">
+        <h2 id="sub-heading" class="sub-section__title">Browse {{ cat.name }}</h2>
+        <div class="sub-grid">
+          @for (sub of subCategories(); track sub.id) {
+            <a [routerLink]="['/category', breadcrumb()[0]?.slug, sub.slug]" class="sub-card" [id]="'sub-' + sub.id">
+              <span class="sub-card__icon">{{ sub.icon }}</span>
+              <span class="sub-card__name">{{ sub.name }}</span>
+              <span class="sub-card__count">{{ sub.productCount }} items</span>
+              <span class="sub-card__arrow">→</span>
+            </a>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Products -->
+    <section class="products-section" aria-labelledby="products-heading">
+      <div class="products-header">
+        <h2 id="products-heading" class="sub-section__title">
+          Products in {{ cat.name }}
+          <span class="count-badge">{{ products().length }}</span>
+        </h2>
+        <a routerLink="/products" [queryParams]="{category: cat.id}" class="view-all-link">View with filters →</a>
+      </div>
+      @if (products().length > 0) {
+        <div class="products-grid">
+          @for (product of products(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        </div>
+      } @else {
+        <div class="empty-cat">
+          <span>📦</span>
+          <p>No products found in this category yet.</p>
+          <a routerLink="/products" class="btn-browse">Browse all products</a>
+        </div>
+      }
+    </section>
+  </div>
+} @else {
+  <div class="not-found">
+    <span class="not-found-icon">🔍</span>
+    <h1>Category not found</h1>
+    <a routerLink="/" class="btn-home">← Back to Home</a>
+  </div>
+}

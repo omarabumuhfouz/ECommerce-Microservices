@@ -1,0 +1,108 @@
+<div class="order-layout">
+  
+  <div class="order-header">
+    <h2>Order Management</h2>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search by Order ID, Customer..." [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" class="search-input">
+    </div>
+  </div>
+
+  <!-- Dashboard Overview Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon box-icon">📦</div>
+      <div class="stat-details">
+        <span class="stat-label">Total Orders</span>
+        <span class="stat-value">{{ totalOrders() }}</span>
+      </div>
+    </div>
+    
+    <div class="stat-card warning">
+      <div class="stat-icon alert-icon">⏳</div>
+      <div class="stat-details">
+        <span class="stat-label">Action Required (Pending)</span>
+        <span class="stat-value">{{ pendingOrders() }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card success">
+      <div class="stat-icon success-icon">💰</div>
+      <div class="stat-details">
+        <span class="stat-label">Total Revenue</span>
+        <span class="stat-value">{{ totalRevenue() | currency }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Professional Data Table -->
+  <div class="panel">
+    <div class="panel-header">
+      <h3>Recent Orders</h3>
+    </div>
+    <div class="table-responsive">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>Order ID / Date</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Current Status</th>
+            <th>Update Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of filteredOrders(); track order.id) {
+            <tr>
+              <td>
+                <div class="order-info">
+                  <span class="order-id">{{ order.id }}</span>
+                  <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="customer-info">
+                  <span class="customer-name">{{ order.customerName }}</span>
+                  <span class="customer-email">{{ order.customerEmail }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="items-summary">
+                  <span class="item-count">{{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}</span>
+                  <span class="item-preview" title="{{ order.items[0].productName }}">
+                    {{ order.items[0].productName }}
+                    @if (order.items.length > 1) { ... }
+                  </span>
+                </div>
+              </td>
+              <td>
+                <span class="price-text">{{ order.total | currency }}</span>
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td>
+                <select class="status-select" [value]="order.status" (change)="updateStatus(order, $event)">
+                  @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <button class="btn-outline">Details</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-state">No orders found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

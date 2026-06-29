@@ -1,0 +1,77 @@
+<div class="cart-page">
+  <div class="container">
+    <h1 class="page-title">Shopping Cart</h1>
+
+    @if (cartService.items().length > 0) {
+      <div class="cart-layout">
+        <!-- Cart Items -->
+        <div class="cart-items">
+          @for (item of cartService.items(); track item.product.id) {
+            <div class="cart-item">
+              <img [src]="item.product.thumbnail" [alt]="item.product.name" class="item-img">
+              <div class="item-details">
+                <h3 class="item-name"><a [routerLink]="['/product', item.product.slug]">{{ item.product.name }}</a></h3>
+                <p class="item-brand">{{ item.product.brand }}</p>
+                <div class="item-attributes">
+                  @for (attr of item.selectedAttributes | keyvalue; track attr.key) {
+                    <span class="attr-badge">{{ attr.key }}: {{ attr.value }}</span>
+                  }
+                </div>
+              </div>
+              <div class="item-actions">
+                <div class="qty-control">
+                  <button class="qty-btn" (click)="updateQuantity(item.product.id, item.quantity, -1)">-</button>
+                  <span class="qty-val">{{ item.quantity }}</span>
+                  <button class="qty-btn" (click)="updateQuantity(item.product.id, item.quantity, 1)">+</button>
+                </div>
+                <div class="item-price">
+                  <span class="current-price">{{ item.product.price | currency }}</span>
+                </div>
+                <button class="remove-btn" (click)="removeItem(item.product.id)" aria-label="Remove item">✕</button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Order Summary -->
+        <div class="cart-summary">
+          <h2>Order Summary</h2>
+          <div class="summary-row">
+            <span>Subtotal ({{ cartService.totalItems() }} items)</span>
+            <span>{{ cartService.subtotal() | currency }}</span>
+          </div>
+          @if (cartService.discount() > 0) {
+            <div class="summary-row discount">
+              <span>Discount</span>
+              <span>-{{ cartService.discount() | currency }}</span>
+            </div>
+          }
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>Calculated at checkout</span>
+          </div>
+          <div class="summary-total">
+            <span>Total</span>
+            <span>{{ cartService.total() | currency }}</span>
+          </div>
+          
+          <button class="checkout-btn" (click)="checkout()">
+            Proceed to Checkout
+          </button>
+          
+          <div class="secure-checkout">
+            <span>🔒 Secure Checkout</span>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added anything to your cart yet.</p>
+        <a routerLink="/products" class="btn-primary">Continue Shopping</a>
+      </div>
+    }
+  </div>
+</div>

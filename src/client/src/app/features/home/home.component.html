@@ -1,0 +1,123 @@
+<main class="home">
+
+  <!-- ── HERO ── -->
+  <section class="hero" aria-label="Hero banner">
+    @for (slide of heroSlides; track slide.title; let i = $index) {
+      <div class="hero__slide" [class.hero__slide--active]="currentSlide() === i" [class]="slide.gradient">
+        <div class="hero__content">
+          <span class="hero__tag">{{ slide.tag }}</span>
+          <h1 class="hero__title">{{ slide.title }}</h1>
+          <p class="hero__subtitle">{{ slide.subtitle }}</p>
+          <div class="hero__actions">
+            <a [routerLink]="slide.link" class="btn btn--primary btn--lg">{{ slide.cta }}</a>
+            <a routerLink="/products" class="btn btn--ghost btn--lg">Browse All</a>
+          </div>
+        </div>
+        <div class="hero__visual"></div>
+      </div>
+    }
+
+    <button class="hero__arrow hero__arrow--prev" (click)="prevSlide()" aria-label="Previous slide">‹</button>
+    <button class="hero__arrow hero__arrow--next" (click)="nextSlide()" aria-label="Next slide">›</button>
+    <div class="hero__dots">
+      @for (slide of heroSlides; track slide.title; let i = $index) {
+        <button class="hero__dot" [class.hero__dot--active]="currentSlide() === i" (click)="goToSlide(i)" [attr.aria-label]="'Slide ' + (i+1)"></button>
+      }
+    </div>
+  </section>
+
+  <!-- ── STATS ── -->
+  <section class="stats">
+    <div class="stats__inner">
+      <div class="stat-item"><span class="stat-number">50K+</span><span class="stat-label">Products</span></div>
+      <div class="stat-item"><span class="stat-number">200+</span><span class="stat-label">Brands</span></div>
+      <div class="stat-item"><span class="stat-number">99%</span><span class="stat-label">Satisfaction</span></div>
+      <div class="stat-item"><span class="stat-number">24/7</span><span class="stat-label">Support</span></div>
+    </div>
+  </section>
+
+  <!-- ── CATEGORIES ── -->
+  <section class="section" aria-labelledby="categories-heading">
+    <div class="section__inner">
+      <div class="section__header">
+        <h2 id="categories-heading" class="section__title">Shop by Category</h2>
+        <a routerLink="/products" class="section__link">See all →</a>
+      </div>
+      <div class="categories-grid">
+        @for (cat of rootCategories(); track cat.id) {
+          <a [routerLink]="['/category', cat.slug]" class="category-card" [id]="'cat-' + cat.id">
+            <div class="category-card__icon">{{ cat.icon }}</div>
+            <h3 class="category-card__name">{{ cat.name }}</h3>
+            <p class="category-card__count">{{ cat.productCount }} items</p>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PRODUCTS TABS ── -->
+  <section class="section" aria-labelledby="products-heading">
+    <div class="section__inner">
+      <div class="section__header">
+        <h2 id="products-heading" class="section__title">Our Products</h2>
+        <div class="tab-group" role="tablist">
+          <button role="tab" class="tab-btn" [class.tab-btn--active]="activeTab()==='featured'" (click)="activeTab.set('featured')">Featured</button>
+          <button role="tab" class="tab-btn" [class.tab-btn--active]="activeTab()==='new'" (click)="activeTab.set('new')">New Arrivals</button>
+          <button role="tab" class="tab-btn" [class.tab-btn--active]="activeTab()==='sale'" (click)="activeTab.set('sale')">On Sale</button>
+        </div>
+      </div>
+      <div class="products-grid">
+        @for (product of activeProducts; track product.id) {
+          <app-product-card [product]="product" />
+        }
+      </div>
+      <div class="section__cta">
+        <a routerLink="/products" class="btn btn--outline">View All Products →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROMO BANNERS ── -->
+  <section class="promos section">
+    <div class="section__inner">
+      <div class="promo-grid">
+        <a routerLink="/category/electronics/phones/smartphones" class="promo-card promo-card--1">
+          <div class="promo-card__content">
+            <span class="promo-card__tag">New Season</span>
+            <h3 class="promo-card__title">Latest Smartphones</h3>
+            <p class="promo-card__subtitle">Up to 20% off flagship devices</p>
+            <span class="promo-card__cta">Shop Now →</span>
+          </div>
+        </a>
+        <a routerLink="/category/fashion/womens-clothing/dresses" class="promo-card promo-card--2">
+          <div class="promo-card__content">
+            <span class="promo-card__tag">Summer Sale</span>
+            <h3 class="promo-card__title">Women's Dresses</h3>
+            <p class="promo-card__subtitle">Fresh styles from top brands</p>
+            <span class="promo-card__cta">Shop Now →</span>
+          </div>
+        </a>
+        <a routerLink="/category/sports/fitness" class="promo-card promo-card--3">
+          <div class="promo-card__content">
+            <span class="promo-card__tag">Get Active</span>
+            <h3 class="promo-card__title">Fitness Gear</h3>
+            <p class="promo-card__subtitle">Start your wellness journey</p>
+            <span class="promo-card__cta">Shop Now →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TRUST ── -->
+  <section class="trust section">
+    <div class="section__inner">
+      <div class="trust-grid">
+        <div class="trust-item"><span class="trust-icon">🚚</span><h4>Free Shipping</h4><p>On orders over $50</p></div>
+        <div class="trust-item"><span class="trust-icon">↩️</span><h4>Easy Returns</h4><p>30-day return policy</p></div>
+        <div class="trust-item"><span class="trust-icon">🔒</span><h4>Secure Payment</h4><p>256-bit SSL encryption</p></div>
+        <div class="trust-item"><span class="trust-icon">🌟</span><h4>Best Quality</h4><p>Curated premium products</p></div>
+      </div>
+    </div>
+  </section>
+</main>
