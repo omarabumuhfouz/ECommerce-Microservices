@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+/* ================================================
+   DESIGN TOKENS
+   ================================================ */
+:root {
+  --color-primary: #7C3AED;
+  --color-primary-light: #8B5CF6;
+  --color-primary-dark: #6D28D9;
+  --color-primary-glow: rgba(124, 58, 237, 0.25);
+  --color-secondary: #EC4899;
+  --color-accent: #06B6D4;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+
+  --bg-base: #0A0A1A;
+  --bg-surface: #0E0E20;
+  --bg-card: #141428;
+  --bg-card-hover: #1C1C36;
+  --bg-input: #1A1A2E;
+  --bg-overlay: rgba(10, 10, 26, 0.95);
+
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-accent: #8B5CF6;
+
+  --border-color: rgba(255, 255, 255, 0.07);
+  --border-color-hover: rgba(124, 58, 237, 0.45);
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+  --border-radius-full: 9999px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 32px rgba(124, 58, 237, 0.25);
+  --shadow-glow-pink: 0 0 32px rgba(236, 72, 153, 0.25);
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', sans-serif;
+
+  --max-width: 1400px;
+  --navbar-height: 68px;
+
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* ================================================
+   RESET
+   ================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+img, video { max-width: 100%; display: block; }
+button, input, select, textarea { font-family: inherit; }
+a { color: inherit; }
+
+/* ================================================
+   SCROLLBAR
+   ================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+/* ================================================
+   SELECTION
+   ================================================ */
+::selection { background: rgba(124,58,237,0.35); color: var(--text-primary); }
+
+/* ================================================
+   FOCUS RING
+   ================================================ */
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }

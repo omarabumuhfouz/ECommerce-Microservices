@@ -1,0 +1,74 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>Create Account</h2>
+      <p>Join NexShop today</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input 
+          id="name" 
+          type="text" 
+          formControlName="name" 
+          placeholder="John Doe"
+          [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+        />
+        @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+          <span class="error-msg">Name is required (min 2 chars).</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          id="email" 
+          type="email" 
+          formControlName="email" 
+          placeholder="john@example.com"
+          [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+        />
+        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+          <span class="error-msg">Please enter a valid email.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          formControlName="password" 
+          placeholder="At least 6 characters"
+          [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+        />
+        @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+          <span class="error-msg">Password is required (min 6 chars).</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input 
+          id="confirmPassword" 
+          type="password" 
+          formControlName="confirmPassword" 
+          placeholder="Confirm your password"
+          [class.is-invalid]="(registerForm.get('confirmPassword')?.invalid || registerForm.hasError('passwordMismatch')) && registerForm.get('confirmPassword')?.touched"
+        />
+        @if (registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
+          <span class="error-msg">Passwords do not match.</span>
+        }
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="registerForm.invalid">
+        Create Account
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Already have an account? <a routerLink="/login">Log in</a></p>
+    </div>
+  </div>
+</div>

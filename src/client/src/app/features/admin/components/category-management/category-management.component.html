@@ -1,0 +1,128 @@
+<div class="cat-mgmt-layout">
+  
+  <!-- Left Panel: Tree View -->
+  <div class="panel tree-panel">
+    <div class="panel-header">
+      <h2>Category Explorer</h2>
+      <button class="btn-text" (click)="clearSelection()" [class.active]="!selectedCategory()">+ Add Root</button>
+    </div>
+    <div class="panel-body tree-container">
+      
+      <!-- Recursive Tree Template -->
+      <ng-template #treeNode let-nodes="nodes">
+        <ul class="tree-list">
+          @for (node of nodes; track node.id) {
+            <li class="tree-node">
+              <div class="node-content" 
+                   [class.selected]="selectedCategory()?.id === node.id"
+                   (click)="selectCategory(node)">
+                
+                <button type="button" class="node-toggle" 
+                        [style.visibility]="node.children.length ? 'visible' : 'hidden'"
+                        (click)="toggleNode(node.id, $event)">
+                  {{ isExpanded(node.id) ? '▼' : '▶' }}
+                </button>
+                
+                <span class="node-icon">{{ node.icon }}</span>
+                <span class="node-name">{{ node.name }}</span>
+                <span class="node-count">({{ node.productCount }})</span>
+              </div>
+              
+              <!-- Render children if expanded -->
+              @if (node.children.length > 0 && isExpanded(node.id)) {
+                <div class="tree-children">
+                  <ng-container *ngTemplateOutlet="treeNode; context: { nodes: node.children }"></ng-container>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      </ng-template>
+
+      <!-- Render Root -->
+      @if (categoryTree.length > 0) {
+        <ng-container *ngTemplateOutlet="treeNode; context: { nodes: categoryTree }"></ng-container>
+      } @else {
+        <div class="empty-state">No categories exist yet.</div>
+      }
+    </div>
+  </div>
+
+  <!-- Right Panel: Master-Detail -->
+  <div class="detail-panel">
+    
+    @if (selectedCategory(); as cat) {
+      <!-- Category Details Header -->
+      <div class="panel detail-header-panel">
+        <div class="panel-body">
+          <div class="detail-header-flex">
+            <div class="detail-icon-large">{{ cat.icon }}</div>
+            <div class="detail-info">
+              <h2>{{ cat.name }}</h2>
+              <p class="detail-slug">/{{ cat.slug }}</p>
+              @if (cat.description) {
+                <p class="detail-desc">{{ cat.description }}</p>
+              }
+            </div>
+            <div class="detail-actions">
+              <button class="btn-outline">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Existing Subcategories -->
+      @if (cat.children.length > 0) {
+        <div class="panel subcat-panel">
+          <div class="panel-header">
+            <h3>Direct Subcategories ({{ cat.children.length }})</h3>
+          </div>
+          <div class="panel-body subcat-grid">
+            @for (child of cat.children; track child.id) {
+              <div class="subcat-card" (click)="selectCategory(child)">
+                <span class="subcat-icon">{{ child.icon }}</span>
+                <span class="subcat-name">{{ child.name }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+
+    <!-- Add Form (Dynamic based on selection) -->
+    <div class="panel form-panel">
+      <div class="panel-header">
+        <h3>{{ selectedCategory() ? 'Add Subcategory to ' + selectedCategory()?.name : 'Add Top-Level Category' }}</h3>
+      </div>
+      <div class="panel-body">
+        <form [formGroup]="categoryForm" (ngSubmit)="onSubmitCategory()" class="sleek-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="catName">Name</label>
+              <input type="text" id="catName" formControlName="name" placeholder="e.g. Smart Watches" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="catIcon">Icon (Emoji)</label>
+              <input type="text" id="catIcon" formControlName="icon" placeholder="⌚" class="form-input">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="catSlug">URL Slug</label>
+            <input type="text" id="catSlug" formControlName="slug" placeholder="smart-watches" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="catDesc">Description</label>
+            <textarea id="catDesc" formControlName="description" rows="3" placeholder="Brief description..." class="form-input"></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit" [disabled]="categoryForm.invalid">
+            <span>+ {{ selectedCategory() ? 'Add Subcategory' : 'Add Root Category' }}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>

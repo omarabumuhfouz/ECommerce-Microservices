@@ -1,0 +1,54 @@
+<div class="profile-page">
+  <div class="container">
+    <div class="profile-header">
+      <img [src]="user?.avatar" [alt]="user?.name" class="profile-avatar">
+      <div class="profile-title">
+        <h1>{{ user?.name }}</h1>
+        <p class="role-badge" [class.admin]="isAdmin">{{ isAdmin ? 'Administrator' : 'Customer' }}</p>
+      </div>
+    </div>
+
+    <div class="profile-content">
+      <!-- Admin Specific Section -->
+      @if (isAdmin) {
+        <div class="profile-card admin-panel-link">
+          <h2>Admin Controls</h2>
+          <p>You have administrative privileges. You can manage products, view orders, and manage users from the admin dashboard.</p>
+          <a routerLink="/admin" class="btn-primary">Go to Admin Dashboard</a>
+        </div>
+      }
+
+      <div class="profile-grid">
+        <!-- Account Details -->
+        <div class="profile-card">
+          <h2>Account Details</h2>
+          <div class="info-group">
+            <label>Full Name</label>
+            <p>{{ user?.name }}</p>
+          </div>
+          <div class="info-group">
+            <label>Email Address</label>
+            <p>{{ user?.email }}</p>
+          </div>
+          <div class="info-group">
+            <label>Member Since</label>
+            <p>{{ user?.createdAt | date:'mediumDate' }}</p>
+          </div>
+          <button class="btn-secondary">Edit Details</button>
+        </div>
+
+        <!-- Orders Placeholder -->
+        @if (!isAdmin) {
+          <div class="profile-card">
+            <h2>Recent Orders</h2>
+            <div class="empty-state">
+              <span class="empty-icon">📦</span>
+              <p>You haven't placed any orders yet.</p>
+              <a routerLink="/products" class="btn-primary-outline">Start Shopping</a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

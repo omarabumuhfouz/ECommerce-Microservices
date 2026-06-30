@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: sqlserver
+  namespace: ecommerce
+
+spec:
+
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: sqlserver
+
+  template:
+
+    metadata:
+      labels:
+        app: sqlserver
+
+    spec:
+
+      containers:
+
+      - name: sqlserver
+
+        image: mcr.microsoft.com/mssql/server:2022-latest
+
+        ports:
+
+        - containerPort: 1433
+
+        env:
+
+        - name: ACCEPT_EULA
+          value: "Y"
+
+        - name: SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ecommerce-secret
+              key: SA_PASSWORD
+
+        volumeMounts:
+
+        - mountPath: /var/opt/mssql
+          name: sql-data
+
+      volumes:
+
+      - name: sql-data
+
+        persistentVolumeClaim:
+          claimName: sqlserver-pvc

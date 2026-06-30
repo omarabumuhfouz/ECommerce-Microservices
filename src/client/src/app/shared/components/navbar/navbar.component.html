@@ -1,0 +1,143 @@
+<header class="navbar" [class.navbar--scrolled]="isScrolled()" [class.navbar--open]="isMobileMenuOpen()">
+  <div class="navbar__inner">
+
+    <!-- Logo -->
+    <a routerLink="/" class="navbar__logo" (click)="closeMobileMenu()">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">NexShop</span>
+    </a>
+
+    <!-- Search -->
+    <form class="navbar__search" (submit)="onSearch($event)" role="search">
+      <span class="search-icon">🔍</span>
+      <input
+        id="navbar-search"
+        type="search"
+        [(ngModel)]="searchQuery"
+        name="q"
+        placeholder="Search products, brands..."
+        autocomplete="off"
+      />
+      <button type="submit" class="search-submit" aria-label="Search">Search</button>
+    </form>
+
+    <!-- Desktop nav links -->
+    <nav class="navbar__nav" aria-label="Main navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">Home</a>
+      <a routerLink="/products" routerLinkActive="active" class="nav-link">Products</a>
+
+      <!-- Categories mega menu trigger -->
+      <div class="mega-trigger" (mouseenter)="openMegaMenu(categoryTree()[0])" (mouseleave)="closeMegaMenu()">
+        <button class="nav-link" type="button">
+          Categories <span class="chevron">▾</span>
+        </button>
+
+        @if (activeMenuCategory()) {
+          <div class="mega-menu" (mouseenter)="openMegaMenu(activeMenuCategory()!)" (mouseleave)="closeMegaMenu()">
+            <!-- Column 1: Root categories -->
+            <div class="mega-col mega-col--roots">
+              <p class="mega-heading">All Categories</p>
+              @for (cat of categoryTree(); track cat.id) {
+                <button
+                  class="mega-root-item"
+                  [class.mega-root-item--active]="activeMenuCategory()?.id === cat.id"
+                  type="button"
+                  (mouseenter)="openMegaMenu(cat)"
+                >
+                  <span class="cat-icon">{{ cat.icon }}</span>
+                  <span>{{ cat.name }}</span>
+                  @if (cat.children.length) { <span class="cat-arrow">›</span> }
+                </button>
+              }
+            </div>
+
+            <!-- Column 2: Sub-categories of active root -->
+            @if (activeMenuCategory()?.children?.length) {
+              <div class="mega-col mega-col--subs">
+                <p class="mega-heading">{{ activeMenuCategory()!.name }}</p>
+                @for (sub of activeMenuCategory()!.children; track sub.id) {
+                  <div class="mega-sub-group">
+                    <a [routerLink]="['/category', activeMenuCategory()!.slug, sub.slug]" class="mega-sub-title" (click)="closeMegaMenu()">
+                      {{ sub.icon }} {{ sub.name }}
+                    </a>
+                    @for (child of sub.children; track child.id) {
+                      <a [routerLink]="['/category', activeMenuCategory()!.slug, sub.slug, child.slug]" class="mega-child-link" (click)="closeMegaMenu()">
+                        {{ child.name }}
+                      </a>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Column 3: Banner -->
+            <div class="mega-col mega-col--promo">
+              <a [routerLink]="['/category', activeMenuCategory()?.slug]" class="mega-promo-card" (click)="closeMegaMenu()">
+                <span class="promo-icon">{{ activeMenuCategory()?.icon }}</span>
+                <span class="promo-text">Shop {{ activeMenuCategory()?.name }}</span>
+                <span class="promo-count">{{ activeMenuCategory()?.productCount }} products →</span>
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </nav>
+
+    <!-- Actions -->
+    <div class="navbar__actions">
+      @if (authService.isLoggedIn()) {
+        <div class="user-dropdown">
+          <button class="user-btn" type="button">
+            <img [src]="authService.userAvatar()" alt="User" class="nav-avatar">
+            <span class="user-name">{{ authService.userName() }}</span>
+            <span class="chevron">▾</span>
+          </button>
+          <div class="dropdown-menu">
+            @if (authService.isAdmin()) {
+              <a routerLink="/admin" class="dropdown-item">⚙️ Admin Dashboard</a>
+            }
+            <a routerLink="/profile" class="dropdown-item">👤 Profile</a>
+            <a routerLink="/orders" class="dropdown-item">📦 My Orders</a>
+            <hr class="dropdown-divider">
+            <button class="dropdown-item text-danger" (click)="authService.logout()">🚪 Log Out</button>
+          </div>
+        </div>
+      } @else {
+        <div class="auth-links">
+          <a routerLink="/login" class="nav-link">Log In</a>
+          <a routerLink="/register" class="btn-primary-sm">Sign Up</a>
+        </div>
+      }
+
+      <a routerLink="/cart" class="action-btn" id="navbar-cart-btn" aria-label="Shopping cart">
+        <span class="action-icon">🛒</span>
+        @if (cartCount() > 0) {
+          <span class="cart-badge">{{ cartCount() }}</span>
+        }
+      </a>
+      <button class="hamburger" type="button" (click)="toggleMobileMenu()" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  @if (isMobileMenuOpen()) {
+    <div class="mobile-menu">
+      <a routerLink="/" (click)="closeMobileMenu()" class="mobile-link">🏠 Home</a>
+      <a routerLink="/products" (click)="closeMobileMenu()" class="mobile-link">🛍️ Products</a>
+      @for (cat of categoryTree(); track cat.id) {
+        <div class="mobile-category">
+          <a [routerLink]="['/category', cat.slug]" (click)="closeMobileMenu()" class="mobile-link mobile-link--cat">
+            {{ cat.icon }} {{ cat.name }}
+          </a>
+          @for (sub of cat.children; track sub.id) {
+            <a [routerLink]="['/category', cat.slug, sub.slug]" (click)="closeMobileMenu()" class="mobile-link mobile-link--sub">
+              {{ sub.name }}
+            </a>
+          }
+        </div>
+      }
+    </div>
+  }
+</header>

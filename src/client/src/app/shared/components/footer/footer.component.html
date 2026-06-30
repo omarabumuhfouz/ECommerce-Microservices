@@ -1,0 +1,55 @@
+<footer class="footer">
+  <div class="footer__top">
+    <div class="footer__brand">
+      <div class="footer__logo">⚡ NexShop</div>
+      <p class="footer__tagline">Your premier destination for curated products across every category.</p>
+      <div class="footer__social">
+        <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+        <a href="#" class="social-link" aria-label="Instagram">📸</a>
+        <a href="#" class="social-link" aria-label="Facebook">f</a>
+        <a href="#" class="social-link" aria-label="YouTube">▶</a>
+      </div>
+    </div>
+
+    <div class="footer__links">
+      <div class="footer__col">
+        <h4>Shop</h4>
+        <a routerLink="/products">All Products</a>
+        <a routerLink="/products" [queryParams]="{sort: 'newest'}">New Arrivals</a>
+        <a routerLink="/products" [queryParams]="{sort: 'popular'}">Best Sellers</a>
+        <a routerLink="/products" [queryParams]="{inStock: true}">On Sale</a>
+      </div>
+      <div class="footer__col">
+        <h4>Categories</h4>
+        <a routerLink="/category/electronics">Electronics</a>
+        <a routerLink="/category/fashion">Fashion</a>
+        <a routerLink="/category/home-garden">Home & Garden</a>
+        <a routerLink="/category/sports">Sports</a>
+      </div>
+      <div class="footer__col">
+        <h4>Support</h4>
+        <a href="#">Help Center</a>
+        <a href="#">Track Order</a>
+        <a href="#">Returns</a>
+        <a href="#">Contact Us</a>
+      </div>
+      <div class="footer__col">
+        <h4>Newsletter</h4>
+        <p>Get deals & new arrivals in your inbox.</p>
+        <form class="footer__form" (submit)="$event.preventDefault()">
+          <input type="email" placeholder="your@email.com" aria-label="Email for newsletter" />
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <p>© {{ currentYear }} NexShop. All rights reserved.</p>
+    <div class="footer__badges">
+      <span>🔒 Secure Checkout</span>
+      <span>🚚 Free Shipping</span>
+      <span>↩️ Easy Returns</span>
+    </div>
+  </div>
+</footer>

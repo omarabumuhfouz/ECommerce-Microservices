@@ -1,0 +1,39 @@
+<article class="product-card" [class.list-mode]="viewMode() === 'list'" [class.in-cart]="inCart">
+  <a [routerLink]="['/product', product().slug]" class="card-link">
+    <div class="card-image">
+      <img [src]="product().thumbnail" [alt]="product().name" loading="lazy" />
+      <div class="card-badges">
+        @if (product().isNew) { <span class="badge badge--new">New</span> }
+        @if (product().isOnSale && discountPercent > 0) { <span class="badge badge--sale">-{{ discountPercent }}%</span> }
+      </div>
+      <div class="card-overlay">
+        <button class="btn-quickview" type="button">Quick View</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="card-brand">{{ product().brand }}</p>
+      <h3 class="card-name">{{ product().name }}</h3>
+      @if (viewMode() === 'list') {
+        <p class="card-desc">{{ product().shortDescription }}</p>
+      }
+      <app-star-rating [rating]="product().rating" [count]="product().reviewCount" [showCount]="true" />
+      <div class="card-footer">
+        <div class="card-price">
+          <span class="price-current">{{ product().price | currency }}</span>
+          @if (product().originalPrice) {
+            <span class="price-original">{{ product().originalPrice | currency }}</span>
+          }
+        </div>
+        <button
+          class="btn-cart"
+          type="button"
+          [class.btn-cart--added]="inCart"
+          (click)="onAddToCart($event)"
+          [attr.aria-label]="inCart ? 'Added to cart' : 'Add to cart'"
+        >
+          {{ inCart ? '✓ Added' : '+ Cart' }}
+        </button>
+      </div>
+    </div>
+  </a>
+</article>

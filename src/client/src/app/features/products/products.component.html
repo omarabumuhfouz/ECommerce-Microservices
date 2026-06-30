@@ -1,0 +1,193 @@
+<div class="products-page">
+
+  <!-- ── Mobile overlay ── -->
+  @if (isSidebarOpen()) {
+    <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+  }
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" [class.sidebar--open]="isSidebarOpen()" aria-label="Filters">
+    <div class="sidebar__header">
+      <h2 class="sidebar__title">Filters @if (activeFilterCount > 0) { <span class="filter-badge">{{ activeFilterCount }}</span> }</h2>
+      @if (activeFilterCount > 0) {
+        <button class="btn-clear" type="button" (click)="clearFilters()">Clear all</button>
+      }
+      <button class="sidebar-close" type="button" (click)="closeSidebar()" aria-label="Close filters">✕</button>
+    </div>
+
+    <!-- Categories -->
+    <div class="filter-section">
+      <h3 class="filter-label">Categories</h3>
+      <div class="category-tree">
+        @for (root of categoryTree(); track root.id) {
+          <div class="tree-root">
+            <div class="tree-root-row">
+              <label class="tree-check">
+                <input type="checkbox" [checked]="isCategorySelected(root.id)" (change)="toggleCategory(root.id)" />
+                <span class="tree-icon">{{ root.icon }}</span>
+                <span class="tree-name">{{ root.name }}</span>
+                <span class="tree-count">{{ root.productCount }}</span>
+              </label>
+              @if (root.children.length) {
+                <button class="tree-expand" type="button" (click)="toggleExpand(root.id)" [attr.aria-expanded]="isExpanded(root.id)">
+                  {{ isExpanded(root.id) ? '−' : '+' }}
+                </button>
+              }
+            </div>
+            @if (isExpanded(root.id)) {
+              <div class="tree-children">
+                @for (sub of root.children; track sub.id) {
+                  <div class="tree-sub">
+                    <div class="tree-sub-row">
+                      <label class="tree-check tree-check--sub">
+                        <input type="checkbox" [checked]="isCategorySelected(sub.id)" (change)="toggleCategory(sub.id)" />
+                        <span class="tree-name">{{ sub.name }}</span>
+                        <span class="tree-count">{{ sub.productCount }}</span>
+                      </label>
+                      @if (sub.children.length) {
+                        <button class="tree-expand" type="button" (click)="toggleExpand(sub.id)" [attr.aria-expanded]="isExpanded(sub.id)">
+                          {{ isExpanded(sub.id) ? '−' : '+' }}
+                        </button>
+                      }
+                    </div>
+                    @if (isExpanded(sub.id)) {
+                      <div class="tree-children tree-children--deep">
+                        @for (child of sub.children; track child.id) {
+                          <label class="tree-check tree-check--child">
+                            <input type="checkbox" [checked]="isCategorySelected(child.id)" (change)="toggleCategory(child.id)" />
+                            <span class="tree-name">{{ child.name }}</span>
+                            <span class="tree-count">{{ child.productCount }}</span>
+                          </label>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Price Range -->
+    <div class="filter-section">
+      <h3 class="filter-label">Price Range</h3>
+      <div class="price-range">
+        <div class="price-inputs">
+          <div class="price-input-group">
+            <span class="price-symbol">$</span>
+            <input type="number" [ngModel]="minPrice()" (ngModelChange)="minPrice.set($event)" min="0" aria-label="Min price" />
+          </div>
+          <span class="price-dash">–</span>
+          <div class="price-input-group">
+            <span class="price-symbol">$</span>
+            <input type="number" [ngModel]="maxPrice()" (ngModelChange)="maxPrice.set($event)" min="0" aria-label="Max price" />
+          </div>
+        </div>
+        <button class="btn-apply" type="button" (click)="applyPriceRange()">Apply</button>
+      </div>
+    </div>
+
+    <!-- Brands -->
+    <div class="filter-section">
+      <h3 class="filter-label">Brands</h3>
+      <div class="check-list">
+        @for (brand of brands(); track brand) {
+          <label class="check-item">
+            <input type="checkbox" [checked]="isBrandSelected(brand)" (change)="toggleBrand(brand)" />
+            <span class="check-name">{{ brand }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- Rating -->
+    <div class="filter-section">
+      <h3 class="filter-label">Minimum Rating</h3>
+      <div class="rating-options">
+        @for (r of [4, 3, 2]; track r) {
+          <button class="rating-btn" type="button" [class.rating-btn--active]="filter().minRating === r" (click)="setRating(r)">
+            @for (s of [1,2,3,4,5]; track s) { <span [class.filled]="s <= r">★</span> }
+            <span class="rating-label">& up</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- In Stock -->
+    <div class="filter-section">
+      <label class="toggle-row">
+        <span class="toggle-label">In Stock Only</span>
+        <div class="toggle-switch" [class.toggle-switch--on]="filter().inStock" (click)="toggleInStock()" role="switch" [attr.aria-checked]="filter().inStock">
+          <div class="toggle-thumb"></div>
+        </div>
+      </label>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="products-main">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="filter-toggle-btn" type="button" (click)="toggleSidebar()" id="open-filters-btn">
+          ⚙️ Filters @if (activeFilterCount > 0) { <span class="filter-badge">{{ activeFilterCount }}</span> }
+        </button>
+        <p class="result-count"><strong>{{ filteredProducts().length }}</strong> products</p>
+      </div>
+      <div class="toolbar-right">
+        <select class="sort-select" [ngModel]="filter().sortBy" (change)="setSort($event)" aria-label="Sort by">
+          @for (opt of sortOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn" [class.view-btn--active]="viewMode() === 'grid'" (click)="viewMode.set('grid')" aria-label="Grid view" title="Grid">⊞</button>
+          <button class="view-btn" [class.view-btn--active]="viewMode() === 'list'" (click)="viewMode.set('list')" aria-label="List view" title="List">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active filter chips -->
+    @if (activeFilterCount > 0) {
+      <div class="active-filters" role="list" aria-label="Active filters">
+        @if (filter().search) {
+          <span class="chip" role="listitem">🔍 "{{ filter().search }}" <button (click)="updateFilter({search: undefined})" aria-label="Remove search filter">✕</button></span>
+        }
+        @for (id of (filter().categoryIds ?? []); track id) {
+          <span class="chip" role="listitem">{{ id }} <button (click)="toggleCategory(id)" aria-label="Remove category">✕</button></span>
+        }
+        @for (b of (filter().brands ?? []); track b) {
+          <span class="chip" role="listitem">{{ b }} <button (click)="toggleBrand(b)" aria-label="Remove brand">✕</button></span>
+        }
+        @if (filter().priceRange) {
+          <span class="chip" role="listitem">${{ filter().priceRange![0] }} – ${{ filter().priceRange![1] }} <button (click)="updateFilter({priceRange: undefined})" aria-label="Remove price filter">✕</button></span>
+        }
+        @if (filter().minRating) {
+          <span class="chip" role="listitem">★ {{ filter().minRating }}+ <button (click)="updateFilter({minRating: undefined})" aria-label="Remove rating filter">✕</button></span>
+        }
+        @if (filter().inStock) {
+          <span class="chip" role="listitem">In Stock <button (click)="toggleInStock()" aria-label="Remove in-stock filter">✕</button></span>
+        }
+        <button class="chip chip--clear" type="button" (click)="clearFilters()">Clear all</button>
+      </div>
+    }
+
+    <!-- Product grid -->
+    @if (filteredProducts().length > 0) {
+      <div class="products-grid" [class.products-grid--list]="viewMode() === 'list'">
+        @for (product of filteredProducts(); track product.id) {
+          <app-product-card [product]="product" [viewMode]="viewMode()" />
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span class="empty-icon">🔍</span>
+        <h3>No products found</h3>
+        <p>Try adjusting your filters or search query.</p>
+        <button class="btn-clear" type="button" (click)="clearFilters()">Clear Filters</button>
+      </div>
+    }
+  </main>
+</div>

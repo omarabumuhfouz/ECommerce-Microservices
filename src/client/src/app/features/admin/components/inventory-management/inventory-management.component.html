@@ -1,0 +1,117 @@
+<div class="inventory-layout">
+  
+  <div class="inventory-header">
+    <h2>Inventory Management</h2>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search by name or ID..." [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" class="search-input">
+    </div>
+  </div>
+
+  <!-- Dashboard Overview Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon box-icon">📦</div>
+      <div class="stat-details">
+        <span class="stat-label">Total Catalog Items</span>
+        <span class="stat-value">{{ totalItems() }}</span>
+      </div>
+    </div>
+    
+    <div class="stat-card warning">
+      <div class="stat-icon alert-icon">⚠️</div>
+      <div class="stat-details">
+        <span class="stat-label">Low Stock Alerts</span>
+        <span class="stat-value">{{ lowStockItems() }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card danger">
+      <div class="stat-icon danger-icon">🚨</div>
+      <div class="stat-details">
+        <span class="stat-label">Out of Stock</span>
+        <span class="stat-value">{{ outOfStockItems() }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card success">
+      <div class="stat-icon success-icon">💰</div>
+      <div class="stat-details">
+        <span class="stat-label">Total Inventory Value</span>
+        <span class="stat-value">{{ totalValue() | currency }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Professional Data Table -->
+  <div class="panel">
+    <div class="table-responsive">
+      <table class="inventory-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Unit Price</th>
+            <th>Status</th>
+            <th>Stock Level</th>
+            <th>Quick Adjust</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
+            <tr>
+              <td>
+                <div class="product-cell">
+                  <img [src]="product.thumbnail" [alt]="product.name" class="product-thumb">
+                  <div class="product-info">
+                    <span class="product-name">{{ product.name }}</span>
+                    <span class="product-id">ID: {{ product.id }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="category-badge">{{ product.categoryId | titlecase }}</span>
+              </td>
+              <td>
+                <span class="price-text">{{ product.price | currency }}</span>
+              </td>
+              <td>
+                <span class="status-badge" 
+                      [class.in-stock]="product.stock >= 10"
+                      [class.low-stock]="product.stock > 0 && product.stock < 10"
+                      [class.out-of-stock]="product.stock === 0">
+                  {{ product.stock === 0 ? 'Out of Stock' : (product.stock < 10 ? 'Low Stock' : 'In Stock') }}
+                </span>
+              </td>
+              <td>
+                <div class="stock-level-cell">
+                  <span class="stock-number">{{ product.stock }}</span>
+                  <div class="stock-bar-container">
+                    <!-- Max width calculation purely for visual effect relative to 100 -->
+                    <div class="stock-bar" 
+                         [class.bg-danger]="product.stock === 0"
+                         [class.bg-warning]="product.stock > 0 && product.stock < 10"
+                         [class.bg-success]="product.stock >= 10"
+                         [style.width.%]="product.stock > 100 ? 100 : product.stock">
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="quick-adjust">
+                  <button class="adjust-btn minus" (click)="updateStock(product, -1)" [disabled]="product.stock <= 0">-</button>
+                  <input type="number" class="adjust-input" [value]="product.stock" (change)="setStock(product, $event)" min="0">
+                  <button class="adjust-btn plus" (click)="updateStock(product, 1)">+</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-state">No products found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
