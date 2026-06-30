@@ -130,7 +130,7 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha
-            type=runnumber
+            type=raw,value=${{ github.run_number }}
 
       # ============================
       # BUILD + PUSH IMAGE
