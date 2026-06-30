@@ -32,6 +32,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
+        // Get Context Service
         var context = services.GetRequiredService<AppDbContext>();
         
         if (context.Database.IsRelational())

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: ecommerce-config
+  namespace: ecommerce
+
+data:
+
+  ASPNETCORE_ENVIRONMENT: Development
+
+  MessageBroker__Host: rabbitmq
+
+  Redis__Host: redis
+
+  Seq__Url: http://seq
