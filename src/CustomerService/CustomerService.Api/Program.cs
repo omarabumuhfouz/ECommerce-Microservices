@@ -11,7 +11,6 @@ builder.AddSerilogLogging();
 
 var app = builder.Build();
 
-
 app.UseRouting();
 
 app.MapCustomersEndpoints();
