@@ -19,12 +19,9 @@ app.UseSharedApplicationMiddleware();
 app.MapSharedDevelopmentEndpoints();
 
 
-
 // using (var scope = app.Services.CreateScope())
 // {
 //     var services = scope.ServiceProvider;
-
-
 //     try
 //     {
 //         await SeedData.SeedAsync(app.Services);
