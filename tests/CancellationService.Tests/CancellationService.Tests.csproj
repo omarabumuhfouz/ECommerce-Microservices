@@ -20,4 +20,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CancellationService\CancellationService.Api\CancellationService.Api.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -7,5 +7,11 @@ namespace CancellationService.Tests
         {
 
         }
+
+        [Fact]
+        public void Test2()
+        {
+
+        }
     }
 }
