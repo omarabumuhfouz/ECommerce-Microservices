@@ -22,6 +22,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+
 #region  Gome Back
 // builder.Services.AddQuartz(q => q.UseMicrosoftDependencyInjectionJobFactory());
 // builder.Services.AddQuartzHostedService(opt => opt.WaitForJobsToComplete = true);
