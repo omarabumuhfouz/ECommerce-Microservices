@@ -1,4 +1,3 @@
-global using SharedKernel.Shared;
 global using SharedKernel.Abstractions.Messaging;
 global using Microsoft.Extensions.Logging;
 global using SharedKernel.Abstractions;
@@ -7,3 +6,4 @@ global using InventoryService.Domain.InventoryItems;
 global using FluentValidation;
 global using MediatR;
 global using InventoryService.Application.Features.Inventory.Specifications;
+global using SharedKernel.Primitives.Results;

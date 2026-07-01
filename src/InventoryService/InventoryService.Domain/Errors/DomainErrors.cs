@@ -1,5 +1,4 @@
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace InventoryService.Domain.Errors;
 

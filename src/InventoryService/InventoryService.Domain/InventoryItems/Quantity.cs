@@ -1,5 +1,5 @@
 using InventoryService.Domain.Errors;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace InventoryService.Domain.ValueObjects;
 

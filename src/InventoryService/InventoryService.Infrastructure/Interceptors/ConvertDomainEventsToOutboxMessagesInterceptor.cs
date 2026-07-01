@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
-using SharedKernel.Primitives.Result;
+using SharedKernel.Primitives.Results;
 
 namespace InventoryService.Infrastructure.Interceptors;
 

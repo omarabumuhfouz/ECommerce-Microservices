@@ -4,7 +4,7 @@ using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SharedKernel.IntegrationEvents.Orders;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace InventoryService.Infrastructure.Consumers;
 

@@ -2,8 +2,7 @@ using InventoryService.Domain.Errors;
 using InventoryService.Domain.InventoryItems.Events;
 using InventoryService.Domain.ValueObjects;
 using SharedKernel.Primitives;
-using SharedKernel.Primitives.Result;
-using SharedKernel.Shared;
+using SharedKernel.Primitives.Results;
 
 namespace InventoryService.Domain.InventoryItems;
 
