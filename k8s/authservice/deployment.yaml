@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: authservice
   namespace: ecommerce
+  labels:
+    app: authservice
+
 spec:
   replicas: 1
 
@@ -17,9 +20,49 @@ spec:
 
     spec:
       containers:
-      - name: authservice
+        - name: authservice
+          image: omarabumuhfouz1/auth-service:latest
+          imagePullPolicy: Always
 
-        image: omarabumuhfouz1/auth-service:latest
+          ports:
+            - containerPort: 7000
 
-        ports:
-        - containerPort: 7000
+          env:
+            # 🔥 ASP.NET environment (VERY IMPORTANT)
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+
+            - name: ASPNETCORE_URLS
+              value: http://+:7000
+
+            # 🔥 Connection string override (optional but best practice in K8s)
+            - name: ConnectionStrings__AuthServiceDb
+              value: "Server=sqlserver;Database=AuthService;User Id=sa;Password=Password12345!;TrustServerCertificate=True;Encrypt=True;"
+
+            # Redis
+            - name: ConnectionStrings__Redis
+              value: "redis:6379,abortConnect=false,connectTimeout=5000"
+
+            # RabbitMQ
+            - name: MessageBroker__Host
+              value: rabbitmq
+
+            - name: MessageBroker__Username
+              value: guest
+
+            - name: MessageBroker__Password
+              value: guest
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 7000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 7000
+            initialDelaySeconds: 20
+            periodSeconds: 10
